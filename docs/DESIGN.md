@@ -129,7 +129,7 @@ demo-video/
 
 **스키마 버전.** 초안의 storyboard 형식은 `schemaVersion: 1`이고, M0은 이 형식을 그대로 이식한다. 아래 형식은 `schemaVersion: 2`이며 M2에서 `validate`와 함께 도입한다. 그 시점부터 회귀 기준은 초안으로 만든 기존 데모가 아니라 `examples/sample-app`이다.
 
-**승인 상태.** `dv.py approve <stage>`가 해당 파일의 해시를 `state.json`에 기록한다. stage는 `survey`(survey.json), `scenario`(scenario.md), `storyboard`(storyboard.json), `final`(output mp4) 네 가지다. 하류 명령은 상류 파일의 해시가 승인 시점과 다르면 exit 1로 멈춘다. 승인 후 파일을 고치면 다시 승인받아야 한다는 규칙을 코드로 강제하는 장치다.
+**승인 상태.** `dv.py approve <stage>`가 해당 파일의 해시를 `state.json`에 기록한다. stage는 `survey`(survey.json), `scenario`(scenario.md), `storyboard`(storyboard.json), `final`(output mp4) 네 가지다. storyboard.json의 해시는 기계가 채우는 필드(`holdMs`, `dwellMs`, 스텝의 `narration` 마크업)를 제외한 정규형으로 계산한다. 그렇지 않으면 3.5단계 `narrate`가 G3 승인을 스스로 무효화한다. 하류 명령은 상류 파일의 해시가 승인 시점과 다르면 exit 1로 멈춘다. 승인 후 파일을 고치면 다시 승인받아야 한다는 규칙을 코드로 강제하는 장치다.
 
 **storyboard.json 장면 예시**
 

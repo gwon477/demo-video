@@ -35,7 +35,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import common
+from . import common, state
 
 PRELUDE = common.SCRIPTS_DIR / "prelude.js"
 
@@ -114,6 +114,8 @@ def main(argv=None):
     sb_path = common.storyboard_path(args.storyboard)
     sb = common.load_json(sb_path)
     demo_dir = sb_path.parent
+    # G3: no recording before the user approved the storyboard (DESIGN 4절).
+    state.require(demo_dir, "storyboard")
     project = Path(args.cwd).resolve() if args.cwd else demo_dir.parent
     scenes_dir = demo_dir / "scenes"
     build_dir = scenes_dir / ".build"

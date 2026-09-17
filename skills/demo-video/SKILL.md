@@ -29,19 +29,42 @@ Recording output is **WebM / VP8 at 25 fps**, sized by the `size` option. There 
 
 Narration is optional. When the user wants it, generate it **before** rendering - see phase 3.5. The `.srt` sidecar comes free with it and is never burned into the picture.
 
+## Phase 0 - Intake
+
+```bash
+python3 <skill>/scripts/dv.py doctor                       # environment; fix what it lists before going on
+python3 <skill>/scripts/dv.py init --url <app url> --name <name> [--size 1920x1080] [--narration none|say] [--bgm none|<file>] [--intro <mp4>] [--outro <mp4>] [--target-sec 60]
+python3 <skill>/scripts/dv.py status                       # any time: which gates are passed, what is next
+```
+
+Ask before `init`: the app URL and a demo account, the audience and purpose, the target length, narration yes/no, BGM (none / your file), and whether the user has intro/outro videos. `init` refuses an unreachable URL - the skill never starts the app.
+
+## Approval gates
+
+Four gates, enforced by `demo/state.json`: `render` refuses to run until G3 is approved, and any edit to an approved file makes the gate stale until it is approved again.
+
+```bash
+python3 <skill>/scripts/dv.py approve survey       # G1 after the user confirms the core features
+python3 <skill>/scripts/dv.py approve scenario     # G2 after the outline is approved
+python3 <skill>/scripts/dv.py approve storyboard   # G3 after the storyboard (and sheet) is approved
+python3 <skill>/scripts/dv.py approve final        # G4 after the user has seen the video
+```
+
+Run `approve` only after the user has actually said yes. Never approve on their behalf.
+
 ## Phase 1 - Understand the solution
 
 Not a page list - an understanding of what the product is for and what a user can do with it. Read the routes, the navigation component, the role guards, and the i18n files before opening a browser; those give you the real inventory and, critically, **the product's own vocabulary**, which every subtitle must use. Then walk each page, capture locators from the snapshot, and run `density()`.
 
 Full method, including the `demo/survey.json` shape and the auth-state handling: `references/survey.md`.
 
-Report what you found and what is in the way - a page that 404s, a feature needing data you do not have, a role your credentials cannot reach - before going further.
+Report what you found and what is in the way - a page that 404s, a feature needing data you do not have, a role your credentials cannot reach - before going further. Then present the 3-5 core features in priority order and stop: G1.
 
 ## Phase 2 - Write the user scenario, then the outline
 
 Decide whose job the viewer is watching get done. A page-ordered demo names screens; a scenario-ordered demo shows work being completed and the screens explain themselves. Write `demo/scenario.md`: the user, the goal, the flow with a reason for each step's position, and what the video deliberately does not cover. Method and the scenario-to-subtitle rewrite: `references/scenario.md`.
 
-Then present the scene outline with a runtime estimate and **stop for approval**:
+Then present the scene outline with a runtime estimate and **stop for approval** (G2):
 
 ```
 1. 인트로            2.5s   타이틀 카드
@@ -63,7 +86,7 @@ Every scene carries its subtitles, its actions, its dwell time, and the transiti
 
 Mark the one word each line is really about with `"emphasis": "<substring>"` - phase 3.5 uses it.
 
-Show the storyboard to the user. Edits are cheap here and expensive after rendering.
+Show the storyboard to the user and stop: G3. Edits are cheap here and expensive after rendering.
 
 ## Phase 3.5 - Narration (only if the demo has voice-over)
 
@@ -153,7 +176,7 @@ ffmpeg -hide_banner -nostats -ss <cue start> -t 2 -i demo/output/<name>.mp4 \
   -af volumedetect -f null - 2>&1 | grep max_volume
 ```
 
-Around -7 dB means speech; -91 dB is silence. Check one cue and one gap. Then report the path, runtime, and whether narration is included.
+Around -7 dB means speech; -91 dB is silence. Check one cue and one gap. Then report the path, runtime, and whether narration is included. Stop: G4.
 
 ## Re-recording
 

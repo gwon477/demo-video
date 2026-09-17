@@ -6,8 +6,12 @@
 Run every command from the target project's root; it reads and writes `demo/`.
 Standard library only, Python 3.10+.
 
-Commands (M0 set; more land per DESIGN.md section 7):
-  render       assemble scene bodies with the prelude and record .webm clips
+Commands (more land per DESIGN.md section 7):
+  doctor       check python, node, playwright-cli, ffmpeg filters, TTS, skill version
+  init         create demo/ with config.json and state.json from intake answers
+  status       which gates are approved and what to do next
+  approve      record the user's approval of survey | scenario | storyboard | final
+  render       assemble scene bodies with the prelude and record .webm clips (needs G3)
   check-sync   verify storyboard, bodies, narration and recorded cues agree
   compose      join clips with xfade transitions into an mp4 (+ .srt, narration)
   narrate      generate narration audio and widen subtitle holds to fit it
@@ -22,6 +26,10 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 COMMANDS = {
+    "doctor": "lib.doctor",
+    "init": "lib.initcmd",
+    "status": "lib.status",
+    "approve": "lib.approve",
     "render": "lib.render",
     "check-sync": "lib.checksync",
     "compose": "lib.compose",
