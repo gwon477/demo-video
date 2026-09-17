@@ -31,7 +31,7 @@
   "transition": { "default": "fade", "defaultMs": 400, "minMs": 300, "maxMs": 700,
                   "types": ["fade", "cut", "dissolve", "wipeleft", "wiperight", "slideleft", "slideright", "smoothleft", "smoothright"] },
   "scene": { "minMs": 2500, "maxMs": 9000, "actionMs": 600, "maxShowInteractions": 2 },
-  "video": { "warnSec": 90, "errorSec": 120, "introMaxMs": 2500, "outroMinMs": 2000, "outroMaxMs": 4000 },
+  "video": { "warnSec": 90, "targetTolerance": 0.15, "introMaxMs": 2500, "outroMinMs": 2000, "outroMaxMs": 4000 },
   "density": { "zoomMinTextChars": 600 },
   "audio": { "integratedLufs": -16, "truePeakDbtp": -1, "duckDb": -18, "duckAttackMs": 300, "duckReleaseMs": 800,
              "fadeInMs": 1500, "fadeOutMs": 2000 },

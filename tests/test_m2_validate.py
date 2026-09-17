@@ -220,19 +220,36 @@ class StructureTest(RuleCase):
         sb["outro"]["holdMs"] = 6000
         self.assert_rule_fails(sb, "FR-044", "outro")
 
-    def test_fr045_total_length(self):
+    def test_fr045_default_warns_over_90s_without_target(self):
         sb = base_storyboard()
-        for i in range(14):                       # 14 x 9s = 126s > 120
+        for i in range(11):                       # 11 x 9s ~ 100s
             sc = copy.deepcopy(sb["scenes"][0])
             sc["id"] = f"{i + 2:02d}-x"
             sc["dwellMs"] = 9000
             sc["transitionIn"] = {"type": "cut"}
             sb["scenes"].append(sc)
-        self.assert_rule_fails(sb, "FR-045")
-        sb["scenes"] = sb["scenes"][:11]         # ~95s -> warning only
         f = self.run_v(sb)
-        self.assertFalse([e for e in f.errors if e["rule"] == "FR-045"])
+        self.assertFalse([e for e in f.errors if e["rule"] == "FR-045"], "length is never an error")
         self.assertTrue([w for w in f.warnings if w["rule"] == "FR-045"])
+
+    def test_fr045_user_target_is_the_budget(self):
+        sb = base_storyboard()
+        for i in range(25):                       # ~230s
+            sc = copy.deepcopy(sb["scenes"][0])
+            sc["id"] = f"{i + 2:02d}-x"
+            sc["dwellMs"] = 9000
+            sc["transitionIn"] = {"type": "cut"}
+            sb["scenes"].append(sc)
+        (self.demo / "config.json").write_text(json.dumps({"video": {"targetSec": 240}}))
+        f = self.run_v(sb)
+        self.assertFalse([w for w in f.warnings if w["rule"] == "FR-045"], "within 15% of the 240s target")
+        (self.demo / "config.json").write_text(json.dumps({"video": {"targetSec": 60}}))
+        f = self.run_v(sb)
+        self.assertTrue([w for w in f.warnings if "over the 60s target" in w["msg"]])
+        sb["scenes"] = sb["scenes"][:3]
+        (self.demo / "config.json").write_text(json.dumps({"video": {"targetSec": 120}}))
+        f = self.run_v(sb)
+        self.assertTrue([w for w in f.warnings if "under the 120s target" in w["msg"]])
 
 
 class InteractionsTest(RuleCase):

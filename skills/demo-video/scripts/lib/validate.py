@@ -13,7 +13,7 @@ pass/fail fixture under tests/. Values come from assets/theme.json.
   FR-020~022  zoom scale range, one zoom per step, zoomOut before the scene ends,
               no zoom on low-density pages (survey.json)
   FR-032      secret fields only take ACCOUNTS.* references
-  FR-043~045  transition types and length, intro/outro/hook, total length
+  FR-043~045  transition types and length, intro/outro/hook, total length vs config targetSec (warning only)
   FR-060~065  interactions[] evidence, decisions, show -> matching action
   locators    every action target must appear in survey.json (warning without survey)
   dwell       dwellMs >= holds + actions; --fix fills it; scene cap 9s
@@ -325,7 +325,17 @@ def check_locators(sb, survey_locators, f, has_survey):
                         f.err("locators", where, f"'{sel}' is not in survey.json locators - take locators from the survey, never invent one")
 
 
-def check_dwell(sb, theme, survey_density, f, fix):
+def target_sec(demo_dir: Path):
+    cfg = demo_dir / "config.json"
+    if not cfg.exists():
+        return None
+    try:
+        return int(((common.load_json(cfg).get("video") or {}).get("targetSec")) or 0) or None
+    except (ValueError, TypeError):
+        return None
+
+
+def check_dwell(sb, theme, survey_density, f, fix, demo_dir=None):
     sc_t = theme["scene"]
     total = 0
     for sc in sb["scenes"]:
@@ -354,10 +364,20 @@ def check_dwell(sb, theme, survey_density, f, fix):
                 for sc in sb["scenes"] if (sc.get("transitionIn") or {}).get("type", "fade") != "cut")
     est = (intro_ms + total + outro_ms - trans) / 1000
     v = theme["video"]
-    if est > v["errorSec"]:
-        f.err("FR-045", "storyboard", f"estimated {est:.0f}s exceeds {v['errorSec']}s - split into two videos")
+    target = target_sec(demo_dir)
+    if target:
+        # FR-045: the user's target length is the budget. Off by more than 15% either way is worth a
+        # word at G3; it is never an error - the length is the user's call.
+        tol = v.get("targetTolerance", 0.15)
+        if est > target * (1 + tol):
+            f.warn("FR-045", "storyboard", f"estimated {est:.0f}s is over the {target}s target by more than {tol:.0%} - "
+                                           f"drop or merge scenes, or confirm the longer cut with the user")
+        elif est < target * (1 - tol):
+            f.warn("FR-045", "storyboard", f"estimated {est:.0f}s is under the {target}s target by more than {tol:.0%} - "
+                                           f"the outline may be missing a feature the user asked for")
     elif est > v["warnSec"]:
-        f.warn("FR-045", "storyboard", f"estimated {est:.0f}s exceeds {v['warnSec']}s - propose a split")
+        f.warn("FR-045", "storyboard", f"estimated {est:.0f}s exceeds the default {v['warnSec']}s - ask the user for a "
+                                       f"target length (dv.py init --target-sec) or propose a split")
     return est
 
 
@@ -374,7 +394,7 @@ def validate(sb, demo_dir: Path, theme=None, fix=False):
     check_structure(sb, theme, f)
     check_interactions(sb, theme, f)
     check_locators(sb, locators, f, survey is not None)
-    est = check_dwell(sb, theme, density, f, fix)
+    est = check_dwell(sb, theme, density, f, fix, demo_dir)
     return f, est
 
 
