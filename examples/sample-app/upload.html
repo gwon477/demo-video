@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Camino - 결과 업로드</title><link rel="stylesheet" href="app.css"></head>
+<body>
+<header>
+  <div class="logo">Camino</div>
+  <nav>
+    <a href="index.html">대시보드</a>
+    <a href="board.html">우선순위 보드</a>
+    <a href="upload.html">결과 업로드</a>
+    <a href="chat.html">분석 도우미</a>
+    <a href="settings.html">설정</a>
+  </nav>
+  <div class="kbd-hint">명령 팔레트 <kbd>⌘</kbd> <kbd>K</kbd></div>
+</header>
+<div id="palette"><div class="box"><input type="text" placeholder="명령 또는 화면 이름 입력..." aria-label="명령 팔레트"></div></div>
+<main>
+
+<h1>결과 업로드</h1>
+<p class="sub">외부 도구의 실행 결과 파일을 끌어다 놓으면 현황에 합산됩니다</p>
+<div class="dropzone" data-testid="dropzone"><p>결과 파일(.json, .xml)을 여기에 끌어다 놓으세요</p><input type="file" multiple hidden aria-label="결과 파일"></div>
+<p class="status" data-testid="upload-status">대기 중</p>
+<ul class="files" data-testid="file-list"></ul>
+<div class="panel" style="margin-top:24px"><h3>분할 패널</h3>
+<div class="split"><div class="pane" style="width:45%"><b>원본</b><p>expected 42,000</p></div><div class="sep" role="separator" aria-label="패널 크기 조절" data-testid="split-sep"></div><div class="pane"><b>실제</b><p>received 45,000</p></div></div>
+<h3>재시도 임계값</h3><input type="range" min="0" max="100" value="30" aria-label="재시도 임계값" data-testid="threshold"><p class="status" data-testid="range-out"></p></div>
+
+</main>
+<script src="app.js"></script></body></html>

@@ -76,14 +76,23 @@ def main(argv=None):
     sb = common.load_json(sb_path)
     root = sb_path.parent
 
-    name = sb.get("name") or "demo"
+    name = common.name_of(sb)
+    version = common.schema_version(sb)
+    theme = common.load_theme()
     scenes_dir = Path(args.scenes_dir).resolve() if args.scenes_dir else root / "scenes"
     out_dir = Path(args.out_dir).resolve() if args.out_dir else root / "output"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    scenes = sb.get("scenes") or []
+    scenes = list(sb.get("scenes") or [])
     if not scenes:
         common.die("storyboard has no scenes")
+    if version >= 2:
+        # HTML intro/outro were rendered as clips; user videos are normalized in M3.
+        if (sb.get("intro") or {}).get("source") == "html":
+            scenes.insert(0, {"id": "00-intro", "kind": "intro"})
+        if (sb.get("outro") or {}).get("source") == "html":
+            scenes.append({"id": "99-outro", "kind": "outro",
+                           "transitionIn": {"type": theme["transition"]["default"], "ms": theme["transition"]["defaultMs"]}})
 
     clips, missing = [], []
     for sc in scenes:
@@ -114,9 +123,18 @@ def main(argv=None):
         if cut_only:
             trans.append(("cut", 0.0))
             continue
-        t = (c["scene"].get("transitionOut") or {})
-        ms = int(t.get("durationMs", 500))
-        typ = t.get("type", "fade")
+        if version >= 2:
+            # v2: the transition belongs to the scene being entered.
+            t = clips[i + 1]["scene"].get("transitionIn") or {}
+            ms = int(t.get("ms", theme["transition"]["defaultMs"]))
+            typ = t.get("type", theme["transition"]["default"])
+            if typ == "cut":
+                trans.append(("cut", 0.0))
+                continue
+        else:
+            t = (c["scene"].get("transitionOut") or {})
+            ms = int(t.get("durationMs", 500))
+            typ = t.get("type", "fade")
         if ms / 1000.0 >= min(c["dur"], clips[i + 1]["dur"]):
             common.die(f'{c["scene"]["id"]}: transition {ms}ms is longer than the clip '
                        f'({c["dur"]:.2f}s) - shorten the transition or lengthen the scene')
@@ -124,13 +142,10 @@ def main(argv=None):
 
     # Warn where a scene is too short for the subtitles it carries.
     for c in clips:
-        steps = common.steps_of(c["scene"])
-        need = sum(int(s.get("holdMs", 0)) for s in steps if s.get("action") == "subtitle") / 1000.0
+        need = sum(int(s["holdMs"] or 0) for s in common.subtitle_steps(c["scene"], version)) / 1000.0
         if need and c["dur"] + 0.4 < need:
             print(f'warning: {c["scene"]["id"]} is {c["dur"]:.2f}s but its subtitles '
                   f'need {need:.2f}s - some will be cut off', file=sys.stderr)
-
-    total = sum(c["dur"] for c in clips) - sum(t[1] for t in trans)
 
     parts, inputs = [], []
     for i, c in enumerate(clips):
@@ -147,6 +162,10 @@ def main(argv=None):
         prev = "s0"
         for i in range(1, len(clips)):
             typ, tdur = trans[i - 1]
+            if typ == "cut":
+                # One graph for everything: a cut is a one-frame fade in xfade terms.
+                typ, tdur = "fade", 1.0 / FPS
+                trans[i - 1] = (typ, tdur)
             offset = acc - tdur
             label = "vout" if i == len(clips) - 1 else f"v{i}"
             parts.append(
@@ -154,6 +173,8 @@ def main(argv=None):
                 f"offset={offset:.3f}[{label}]")
             acc = acc + clips[i]["dur"] - tdur
             prev = label
+
+    total = sum(c["dur"] for c in clips) - sum(t[1] for t in trans)
 
     # Where each scene's own frame 0 lands on the final timeline - the same
     # accumulation the xfade offsets use.

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "product": "Camino",
+  "surveyedAt": "2026-09-17",
+  "coreFeatures": [
+    "실패 테스트 확인",
+    "우선순위 드래그 정렬",
+    "결과 파일 드롭 업로드",
+    "분석 도우미 스트리밍"
+  ],
+  "pages": [
+    {
+      "id": "dashboard",
+      "route": "/index.html",
+      "title": "대시보드",
+      "canDo": "야간 실행 결과와 실패 원인을 확인한다",
+      "locators": {
+        "statFail": "[data-testid=stat-fail]",
+        "failList": "[data-testid=fail-list]",
+        "failRow1": "[data-testid=fail-row-1]",
+        "failDetail": "[data-testid=fail-detail]",
+        "logScroll": "[data-testid=log-scroll]",
+        "badge": "[data-testid=fail-row-1] .badge",
+        "palette": "#palette",
+        "paletteInput": "#palette input"
+      },
+      "density": {
+        "textChars": 1650,
+        "interactive": 6
+      },
+      "interactionsSeen": [
+        "scroll",
+        "hover",
+        "key"
+      ]
+    },
+    {
+      "id": "board",
+      "route": "/board.html",
+      "title": "우선순위 보드",
+      "canDo": "드래그로 실행 순서를 바꾼다",
+      "locators": {
+        "pointerList": "[data-testid=pointer-list]",
+        "pointerHandle3": "[data-testid=pointer-handle-3]",
+        "pointerCard1": "[data-testid=pointer-card-1]",
+        "pointerOrder": "[data-testid=pointer-order]",
+        "pointerOrderP3First": "[data-testid=pointer-order]:has-text(\"p3 > p1\")",
+        "pointerName2": "[data-testid=pointer-name-2]",
+        "html5List": "[data-testid=html5-list]",
+        "html5Card5": "[data-testid=html5-card-5]",
+        "html5Card1": "[data-testid=html5-card-1]",
+        "html5OrderH5First": "[data-testid=html5-order]:has-text(\"h5 > h1\")",
+        "ctxResult": "[data-testid=ctx-result]"
+      },
+      "density": {
+        "textChars": 320,
+        "interactive": 2
+      }
+    },
+    {
+      "id": "upload",
+      "route": "/upload.html",
+      "title": "결과 업로드",
+      "canDo": "결과 파일을 끌어다 놓아 합산한다",
+      "locators": {
+        "dropzone": "[data-testid=dropzone]",
+        "uploadDone": "[data-testid=upload-status]:has-text(\"2개\")",
+        "fileList": "[data-testid=file-list]",
+        "threshold": "[data-testid=threshold]",
+        "rangeOut": "[data-testid=range-out]",
+        "splitSep": "[data-testid=split-sep]"
+      },
+      "density": {
+        "textChars": 260,
+        "interactive": 3
+      }
+    },
+    {
+      "id": "chat",
+      "route": "/chat.html",
+      "title": "분석 도우미",
+      "canDo": "실패 원인을 묻고 수정 방향을 받는다",
+      "locators": {
+        "chatInput": "[data-testid=chat-input]",
+        "chatSend": "[data-testid=chat-send]",
+        "chatAnswer": "[data-testid=chat-answer]",
+        "chatStatus": "[data-testid=chat-status]"
+      },
+      "density": {
+        "textChars": 180,
+        "interactive": 2
+      }
+    }
+  ]
+}

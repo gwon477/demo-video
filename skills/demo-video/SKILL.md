@@ -86,7 +86,14 @@ Every scene carries its subtitles, its actions, its dwell time, and the transiti
 
 Mark the one word each line is really about with `"emphasis": "<substring>"` - phase 3.5 uses it.
 
-Show the storyboard to the user and stop: G3. Edits are cheap here and expensive after rendering.
+For each page in the outline, derive its system-specific interactions (drag, scroll, hover, keys, streaming) from source and screen signals, decide `show` / `skip` / `blocked` with a reason, and record them in the scene's `interactions[]` - `references/interactions.md`.
+
+```bash
+python3 <skill>/scripts/dv.py validate --fix      # fills holdMs/dwellMs, exit 1 lists the violated rules
+python3 <skill>/scripts/dv.py sheet --capture     # demo/sheet.html: screenshots, subtitles, target boxes, interaction badges
+```
+
+Fix the storyboard until `validate` passes - never argue with a rule. Show `sheet.html`, the interaction decisions and any `blocked` items to the user and stop: G3. Edits are cheap here and expensive after rendering.
 
 ## Phase 3.5 - Narration (only if the demo has voice-over)
 
@@ -106,16 +113,14 @@ This must run before phase 4 - rendering first means re-rendering. Rules, the ov
 
 One scene, one `.webm`. Separate files are what make transitions and re-cuts possible - never record the whole demo as a single clip.
 
-Write one **scene body** per scene: `demo/scenes/<id>.body.js`, containing statements only - no wrapper function, no imports. Then:
+`render` generates one body per scene from the storyboard (`demo/scenes/<id>.body.js`, marked `// @generated`) and records it. Write a body by hand only for logic the action list cannot express - remove the marker line and it is kept.
 
 ```bash
 python3 <skill>/scripts/dv.py render --close
 python3 <skill>/scripts/dv.py render 03-dashboard   # one scene
 ```
 
-`dv.py render` wraps each body with the helper prelude, starts and stops the recording, names the clip to match the storyboard id, and trims the frozen tail the recorder leaves behind. Helper functions (`intro`, `subtitle`, `clickRipple`, `chapter`, `highlight`, `density`, `dwell`, `BASE`) are already in scope - **do not `require` anything.** The sandbox has no `require`, no `process`, no `module`.
-
-API contract and effect recipes: `references/screencast-api.md` and `references/effects.md`. Read them before writing a body - the timed overlay calls block for their own duration, and adding your own wait after one silently doubles every scene.
+`render` refuses to run until G3 is approved. It wraps each body with the helper prelude, starts and stops the recording, names the clip to match the storyboard id, and trims the frozen tail. Helpers (`subtitleSpan`, `click`, `typeText`, `zoom`, `zoomOut`, `highlight`, `drag`, `dropFile`, `scrollTo`, `hoverOn`, `key`, `waitStream`, `waitFor`, `dwell`, `BASE`, `ACCOUNTS`, `HOLD`) are already in scope - **do not `require` anything.** Contract and effects: `references/screencast-api.md`, `references/effects.md`.
 
 `dv.py render` prints each clip's actual length next to the storyboard's. A clip far off its planned length means either an action silently failed or the storyboard's dwell time was never reconciled with the steps you wrote - fix whichever it is before composing.
 

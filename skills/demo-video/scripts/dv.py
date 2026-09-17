@@ -11,7 +11,9 @@ Commands (more land per DESIGN.md section 7):
   init         create demo/ with config.json and state.json from intake answers
   status       which gates are approved and what to do next
   approve      record the user's approval of survey | scenario | storyboard | final
-  render       assemble scene bodies with the prelude and record .webm clips (needs G3)
+  validate     enforce the storyboard schema and quality rules; --fix fills holdMs/dwellMs
+  sheet        storyboard + screenshots -> demo/sheet.html for the G3 review
+  render       generate/assemble scene bodies with the prelude and record .webm clips (needs G3)
   check-sync   verify storyboard, bodies, narration and recorded cues agree
   compose      join clips with xfade transitions into an mp4 (+ .srt, narration)
   narrate      generate narration audio and widen subtitle holds to fit it
@@ -30,6 +32,8 @@ COMMANDS = {
     "init": "lib.initcmd",
     "status": "lib.status",
     "approve": "lib.approve",
+    "validate": "lib.validate",
+    "sheet": "lib.sheet",
     "render": "lib.render",
     "check-sync": "lib.checksync",
     "compose": "lib.compose",

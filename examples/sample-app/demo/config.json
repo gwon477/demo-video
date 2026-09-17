@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "camino-demo",
+  "app": {
+    "url": "http://127.0.0.1:8765",
+    "resetCommand": ""
+  },
+  "video": {
+    "size": [
+      1280,
+      720
+    ],
+    "fps": 25,
+    "targetSec": 60
+  },
+  "narration": {
+    "provider": "none"
+  },
+  "bgm": {
+    "source": "none"
+  },
+  "intro": {
+    "source": "html",
+    "template": "default"
+  },
+  "outro": {
+    "source": "html",
+    "template": "default"
+  }
+}

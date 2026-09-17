@@ -227,13 +227,12 @@ flowchart TD
 | 레이어 | 내용 | 줌 적용 |
 | --- | --- | --- |
 | L3 자막 | 자막, 챕터 카드, 키 캡 표시 | 받지 않음 |
-| L2 효과 | 클릭 리플, 하이라이트 박스, 커서 | 앱과 함께 받음 |
+| L2 효과 | 클릭 리플, 하이라이트 박스, 커서 | 좌표가 따라감. 오버레이를 `boundingBox()`의 transform 반영 좌표로 그린다 |
 | L1 앱 | 대상 웹앱 | 받음 |
 
-- L3는 브라우저 top layer(`popover`)에 올린다. 앱의 z-index나 모달과 무관하게 항상 최상단이다.
-- 줌은 L1과 L2를 감싼 래퍼에만 `transform: scale()`을 건다. L3는 래퍼 밖이라 크기와 위치가 변하지 않는다.
-- `[확인 필요]` `page.screencast`의 기본 오버레이가 페이지 transform의 영향을 받는지는 M2 첫 작업에서 스파이크로 확인한다. 영향을 받으면 자막은 자체 DOM 오버레이로 구현한다. 영향을 받지 않으면 반대로 L2 효과(리플, 하이라이트)를 오버레이가 아니라 페이지 DOM에 그려야 줌을 함께 받는다.
-- `[확인 필요]` 줌 대상 래퍼는 앱 DOM을 옮겨 만들지 않는다. `position: fixed`와 포털 모달이 깨진다. `document.body`에 직접 `transform`을 거는 방식을 같은 스파이크에서 검증한다.
+- L3는 `page.screencast.showOverlay`를 그대로 쓴다. 스파이크(2026-09-17)로 확인한 사실: 오버레이는 `<x-pw-glass popover="manual">`로 `<html>` 직속 자식(`<body>`의 형제)에 붙어 top layer에 올라가며, `body`나 `html`의 transform에 영향을 받지 않는다. 별도 DOM 오버레이는 만들지 않는다.
+- 줌은 `document.body`에 `transform: scale()`을 건다. `transform-origin`은 대상 요소 중심(body 좌표계), 줌 중에는 `html { overflow: hidden }`. 앱 DOM을 감싸는 래퍼는 만들지 않는다(`position: fixed`, 포털 모달이 깨진다). 줌 상태에서 `locator.click()`이 확대된 요소를 정확히 맞추는 것을 확인했다.
+- L2는 `zoom`/`zoomOut` 헬퍼가 전환 완료를 기다린 뒤에만 그린다. 전환 중에 그린 좌표는 어긋난다.
 
 **자막 (FR-010 ~ FR-014)**
 
@@ -520,7 +519,7 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 
 | 리스크 | 영향 | 대응 |
 | --- | --- | --- |
-| screencast 오버레이가 줌의 영향을 받는다 | 자막이 함께 확대되어 SC-004 실패 | M2 스파이크에서 확인, 자체 DOM top layer 자막으로 대체 |
+| screencast 오버레이가 줌의 영향을 받는다 | 자막이 함께 확대되어 SC-004 실패 | M2 스파이크에서 "받지 않음"으로 확인 완료. `verify`의 자막 영역 검사로 회귀를 막는다 |
 | `page.screencast` API가 Playwright 버전에 따라 바뀐다 | 렌더 실패 | `doctor`가 검증된 버전 범위를 검사하고, 설치 명령에 버전을 고정한다 |
 | 모델이 게이트를 건너뛰고 렌더한다 | 승인 없는 영상 생성 | `state.json` 해시 게이트가 스크립트 수준에서 차단 |
 | 모델이 body를 제각각 작성한다 | 결과 편차, 싱크 오류 | storyboard에서 body 자동 생성을 기본으로 하고 수기 작성은 예외로 한정 |

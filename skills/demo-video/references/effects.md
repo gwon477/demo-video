@@ -22,17 +22,21 @@ Do not use `chapter()` for the intro. Chapter cards blur the page behind them, w
 
 Card over a blurred snapshot of the live page. Use it between sections mid-video, where the blurred page is the point.
 
-## Click ripple
+## Layers
 
-`clickRipple(locator, { color?, sizePx?, settleMs? })`
+- L3 (subtitles, chapter cards, key caps) are screencast overlays in the browser top layer: they never move or scale when the page zooms or scrolls.
+- L2 (cursor, ripple, highlight) are overlays drawn at the target's live `boundingBox()`, so they land on the zoomed element.
+- L1 (the app) is zoomed with a transform on `<body>` around the target's visible center.
 
-Shows a ring expanding from the element's center (scale .2 → 2.6, opacity .9 → 0 over 600ms) **while** clicking, waits `settleMs` (default 600) so the result registers, then removes the ring. Use it instead of `locator.click()` everywhere in a demo - a bare click is invisible on video.
+## Cursor and click
 
-`ripple(x, y, opts)` for a bare coordinate (canvas, map) - blocks for the animation.
+`click(target)` - the cursor travels 300-500ms (never teleports), a ring expands from the element's center while the real click happens, then 600ms settle. `dblclick`, `rightClick`, `typeText(target, text, { secret })` follow the same shape. `clickRipple` is an alias kept for older bodies.
 
-The ring is an overlay, so it never intercepts the click.
+The cursor is our own SVG overlay; Playwright's `showActions` callouts are English and off by default.
 
-Throws if the target has no bounding box. That is the correct behaviour: it means the element is hidden or detached and the demo would have recorded a click on nothing.
+## Zoom
+
+`zoom(target, { scale })` scales `<body>` 1.2-2.0 (default 1.5) around the visible center of the target over 600ms; `zoomOut()` returns over 500ms. Both block until settled and record `zoomIn` / `zoomOut` marks. Draw highlights after the zoom, not during it.
 
 ## Subtitles
 
@@ -49,9 +53,9 @@ Subtitles do not survive navigation. Re-show after `goto`.
 
 ## Element highlight
 
-`highlight(locator, { label?, durationMs? })` - blocks for `durationMs` (default 2000).
+`highlight(target, { label?, durationMs? })` - blocks for `durationMs` (default 1200).
 
-Outlines the element and optionally puts a labelled callout under it. For "this is the field that matters". Do not stack it with a subtitle in the same instant - the viewer reads one thing at a time.
+2px border with the rest of the frame dimmed, optionally a labelled callout under it. For "this is the field that matters". Do not stack it with a subtitle in the same instant - the viewer reads one thing at a time.
 
 ## Dwell and density
 
@@ -66,6 +70,10 @@ await showActions();   // cursor:'pointer', duration:900, fontSize:20, position:
 Gives an animated pointer travelling between action points plus a callout per action. The callout text is Playwright's own and is **English and not customizable** (`Click`, `Type "..."`, `Press "Enter"`).
 
 For a Korean-only video: `await hideActions()` and carry the explanation in subtitles, keeping the ripple for click feedback. State which choice you made when reporting.
+
+## Interactions
+
+`drag`, `dropFile`, `scrollTo`, `hoverOn`, `resize`, `slide`, `pan`, `wheelZoom`, `key`, `waitStream` - see `interactions.md`.
 
 ## Scene transitions
 

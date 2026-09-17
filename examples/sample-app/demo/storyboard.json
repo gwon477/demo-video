@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "name": "camino-demo",
+    "size": [
+      1280,
+      720
+    ],
+    "narration": false
+  },
+  "intro": {
+    "source": "html",
+    "template": "default",
+    "brand": "Camino",
+    "title": "실패한 테스트, 아침에 3분이면 끝",
+    "tagline": "E2E 테스트 자동화",
+    "holdMs": 2500
+  },
+  "outro": {
+    "source": "html",
+    "template": "default",
+    "title": "Camino",
+    "tagline": "오늘 밤부터 자동으로",
+    "cta": "camino.example.com 에서 시작하기",
+    "holdMs": 3000
+  },
+  "scenes": [
+    {
+      "id": "01-dashboard-fail",
+      "url": "/index.html",
+      "page": "dashboard",
+      "waitFor": "[data-testid=fail-list]",
+      "transitionIn": {
+        "type": "fade",
+        "ms": 400
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "밤새 돌아간 테스트 중 실패한 3건만 먼저 봅니다",
+            "emphasis": "실패한 3건",
+            "hook": true
+          },
+          "actions": [
+            {
+              "type": "highlight",
+              "target": "[data-testid=stat-fail]"
+            },
+            {
+              "type": "zoom",
+              "target": "[data-testid=fail-list]",
+              "scale": 1.5
+            },
+            {
+              "type": "click",
+              "target": "[data-testid=fail-row-1]"
+            },
+            {
+              "type": "waitFor",
+              "target": "[data-testid=fail-detail]"
+            },
+            {
+              "type": "zoomOut"
+            }
+          ],
+          "holdMs": 3475
+        }
+      ],
+      "interactions": [],
+      "dwellMs": 6867
+    },
+    {
+      "id": "02-dashboard-log",
+      "url": "/index.html",
+      "page": "dashboard",
+      "waitFor": "[data-testid=fail-list]",
+      "transitionIn": {
+        "type": "cut"
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "실행 로그는 스크롤해도 실행 이름이 고정됩니다"
+          },
+          "actions": [
+            {
+              "type": "scroll",
+              "target": "[data-testid=log-scroll]",
+              "toRatio": 1
+            },
+            {
+              "type": "hover",
+              "target": "[data-testid=fail-row-1] .badge"
+            }
+          ],
+          "holdMs": 3412
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "scroll",
+          "target": "[data-testid=log-scroll]",
+          "evidence": {
+            "source": "app.css: .scroll overflow:auto, .sticky",
+            "screen": "로그 패널 내부 스크롤, 고정 헤더"
+          },
+          "decision": "show",
+          "reason": "고정되는 실행 이름이 자막의 포인트"
+        },
+        {
+          "kind": "hover",
+          "target": "[data-testid=fail-row-1] .badge",
+          "evidence": {
+            "source": "app.css: .badge[data-tip]:hover::after",
+            "screen": "배지 호버 시 마지막 성공 시각"
+          },
+          "decision": "show",
+          "reason": "실패 추이의 근거가 툴팁에만 있음"
+        }
+      ],
+      "dwellMs": 6867
+    },
+    {
+      "id": "03-dashboard-palette",
+      "url": "/index.html",
+      "page": "dashboard",
+      "waitFor": "[data-testid=fail-list]",
+      "transitionIn": {
+        "type": "cut"
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "⌘K 로 어느 화면이든 바로 이동합니다"
+          },
+          "actions": [
+            {
+              "type": "key",
+              "combo": "Meta+k"
+            },
+            {
+              "type": "waitFor",
+              "target": "#palette input"
+            },
+            {
+              "type": "key",
+              "combo": "Escape"
+            }
+          ],
+          "holdMs": 2788
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "key",
+          "target": "#palette input",
+          "evidence": {
+            "source": "app.js: keydown Meta+k",
+            "screen": "헤더의 ⌘K 표기"
+          },
+          "decision": "show",
+          "reason": "화면 이동의 핵심 경로"
+        }
+      ],
+      "dwellMs": 6867
+    },
+    {
+      "id": "04-board-drag",
+      "url": "/board.html",
+      "page": "board",
+      "waitFor": "[data-testid=pointer-list]",
+      "transitionIn": {
+        "type": "fade",
+        "ms": 400
+      },
+      "mutates": true,
+      "steps": [
+        {
+          "subtitle": {
+            "text": "카드를 끌어 올리면 실행 순서가 바로 바뀝니다",
+            "emphasis": "실행 순서"
+          },
+          "actions": [
+            {
+              "type": "drag",
+              "source": "[data-testid=pointer-handle-3]",
+              "target": "[data-testid=pointer-card-1]",
+              "mode": "pointer",
+              "toOffset": {
+                "x": 120,
+                "y": 8
+              }
+            },
+            {
+              "type": "waitFor",
+              "target": "[data-testid=pointer-order]:has-text(\"p3 > p1\")"
+            },
+            {
+              "type": "highlight",
+              "target": "[data-testid=pointer-order]"
+            }
+          ],
+          "holdMs": 3350
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "drag",
+          "target": "[data-testid=pointer-handle-3]",
+          "mode": "pointer",
+          "evidence": {
+            "source": "app.js: pointerdown/pointermove on [data-testid=pointer-list]",
+            "screen": "카드 좌측 ⋮⋮ 핸들, cursor: grab"
+          },
+          "decision": "show",
+          "reason": "우선순위 변경이 이 화면의 기능 그 자체"
+        },
+        {
+          "kind": "rightClick",
+          "target": "[data-testid=html5-card-1]",
+          "evidence": {
+            "source": "app.js: contextmenu on [data-ctx]",
+            "screen": "우클릭 메뉴"
+          },
+          "decision": "skip",
+          "reason": "자막이 다루지 않는 보조 기능"
+        }
+      ],
+      "dwellMs": 5150
+    },
+    {
+      "id": "05-board-edit",
+      "url": "/board.html",
+      "page": "board",
+      "waitFor": "[data-testid=pointer-list]",
+      "transitionIn": {
+        "type": "cut"
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "이름은 더블클릭으로 바로 고칩니다"
+          },
+          "actions": [
+            {
+              "type": "dblclick",
+              "target": "[data-testid=pointer-name-2]"
+            },
+            {
+              "type": "key",
+              "combo": "Escape"
+            }
+          ],
+          "holdMs": 2662
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "dblclick",
+          "target": "[data-testid=pointer-name-2]",
+          "evidence": {
+            "source": "app.js: dblclick on .editable",
+            "screen": "더블클릭 시 입력창 전환"
+          },
+          "decision": "show",
+          "reason": "인라인 편집이 차별점"
+        }
+      ],
+      "dwellMs": 3862
+    },
+    {
+      "id": "06-board-html5",
+      "url": "/board.html",
+      "page": "board",
+      "waitFor": "[data-testid=html5-list]",
+      "transitionIn": {
+        "type": "cut"
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "네이티브 드래그 목록도 같은 방식으로 정렬합니다"
+          },
+          "actions": [
+            {
+              "type": "drag",
+              "source": "[data-testid=html5-card-5]",
+              "target": "[data-testid=html5-card-1]",
+              "mode": "html5",
+              "toOffset": {
+                "x": 120,
+                "y": 8
+              }
+            },
+            {
+              "type": "waitFor",
+              "target": "[data-testid=html5-order]:has-text(\"h5 > h1\")"
+            }
+          ],
+          "holdMs": 3538
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "drag",
+          "target": "[data-testid=html5-card-5]",
+          "mode": "html5",
+          "evidence": {
+            "source": "board.html: draggable=\"true\", app.js dragstart/drop",
+            "screen": "카드 드래그 시 고스트 이미지"
+          },
+          "decision": "show",
+          "reason": "두 번째 정렬 방식도 재현되어야 함"
+        }
+      ],
+      "dwellMs": 4738
+    },
+    {
+      "id": "07-upload-drop",
+      "url": "/upload.html",
+      "page": "upload",
+      "waitFor": "[data-testid=dropzone]",
+      "transitionIn": {
+        "type": "fade",
+        "ms": 400
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "외부 도구 결과는 끌어다 놓기만 하면 합산됩니다",
+            "emphasis": "끌어다 놓기만"
+          },
+          "actions": [
+            {
+              "type": "dropFile",
+              "target": "[data-testid=dropzone]",
+              "files": [
+                {
+                  "name": "nightly.json",
+                  "mimeType": "application/json",
+                  "content": "{\"passed\": 120}"
+                },
+                {
+                  "name": "smoke.xml",
+                  "mimeType": "application/xml",
+                  "content": "<r/>"
+                }
+              ]
+            },
+            {
+              "type": "waitFor",
+              "target": "[data-testid=upload-status]:has-text(\"2개\")"
+            },
+            {
+              "type": "highlight",
+              "target": "[data-testid=file-list]"
+            }
+          ],
+          "holdMs": 3475
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "dropFile",
+          "target": "[data-testid=dropzone]",
+          "evidence": {
+            "source": "app.js: drop + dataTransfer.files, input[type=file]",
+            "screen": "점선 드롭 영역과 안내 문구"
+          },
+          "decision": "show",
+          "reason": "업로드가 시나리오의 작업"
+        }
+      ],
+      "dwellMs": 5275
+    },
+    {
+      "id": "08-upload-slider",
+      "url": "/upload.html",
+      "page": "upload",
+      "waitFor": "[data-testid=dropzone]",
+      "transitionIn": {
+        "type": "cut"
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "재시도 임계값은 슬라이더로 조정합니다"
+          },
+          "actions": [
+            {
+              "type": "slide",
+              "target": "[data-testid=threshold]",
+              "value": 70
+            },
+            {
+              "type": "resize",
+              "target": "[data-testid=split-sep]",
+              "dx": 120
+            }
+          ],
+          "holdMs": 2912
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "slide",
+          "target": "[data-testid=threshold]",
+          "evidence": {
+            "source": "upload.html: input[type=range]",
+            "screen": "슬라이더와 값 표시"
+          },
+          "decision": "show",
+          "reason": "값 변화가 화면에 즉시 반영됨"
+        },
+        {
+          "kind": "resize",
+          "target": "[data-testid=split-sep]",
+          "evidence": {
+            "source": "app.js: pointer handlers on .sep",
+            "screen": "role=separator, col-resize 커서"
+          },
+          "decision": "skip",
+          "reason": "보조 기능"
+        }
+      ],
+      "dwellMs": 4112
+    },
+    {
+      "id": "09-chat",
+      "url": "/chat.html",
+      "page": "chat",
+      "waitFor": "[data-testid=chat-input]",
+      "transitionIn": {
+        "type": "fade",
+        "ms": 400
+      },
+      "steps": [
+        {
+          "subtitle": {
+            "text": "실패 원인을 물으면 로그를 읽고 수정 방향을 제안합니다",
+            "emphasis": "수정 방향"
+          },
+          "actions": [
+            {
+              "type": "type",
+              "target": "[data-testid=chat-input]",
+              "value": "실패한 테스트를 분석해줘"
+            },
+            {
+              "type": "click",
+              "target": "[data-testid=chat-send]"
+            },
+            {
+              "type": "waitStream",
+              "target": "[data-testid=chat-status]",
+              "until": "attr",
+              "attr": "data-state",
+              "value": "done"
+            },
+            {
+              "type": "highlight",
+              "target": "[data-testid=chat-answer]"
+            }
+          ],
+          "holdMs": 3912
+        }
+      ],
+      "interactions": [
+        {
+          "kind": "waitStream",
+          "target": "[data-testid=chat-status]",
+          "evidence": {
+            "source": "app.js: setInterval token append, data-state streaming/done",
+            "screen": "토큰 단위로 늘어나는 답변, 상태 배지"
+          },
+          "decision": "show",
+          "reason": "스트리밍 응답이 제품의 핵심 경험"
+        }
+      ],
+      "dwellMs": 6312
+    }
+  ]
+}

@@ -35,7 +35,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import common, state
+from . import bodygen, common, state
 
 PRELUDE = common.SCRIPTS_DIR / "prelude.js"
 
@@ -63,21 +63,25 @@ def trim(path: Path, seconds: float) -> bool:
     return True
 
 
-def build_script(sid, scene, body, *, prelude, project_prelude, base, accounts, w, h, rel_webm):
+def build_script(sid, scene, body, *, prelude, project_prelude, base, accounts, w, h, rel_webm, theme, version):
     parts = RECORD_MARK.split(body, maxsplit=1)
     setup, body = (parts[0], parts[1]) if len(parts) == 2 else ("", body)
     # An intro/outro card must not have the previous page flash under its
     # fade-in, so blank the page before the recording starts.
     pre = "await page.goto('about:blank');\n" if scene.get("kind") in ("intro", "outro") else ""
-    # The holds narrate measured, in beat order, so a body can pass HOLD[n]
+    # The holds narrate measured, in step order, so a body can pass HOLD[n]
     # to subtitleSpan and never cut its own narration off.
-    holds = [b.get("holdMs") or 0 for b in common.steps_of(scene) if b.get("action") == "subtitle"]
+    holds = [st["holdMs"] or 0 for st in common.subtitle_steps(scene, version)]
     return (
         "async page => {\n"
         f"const BASE = {json.dumps(base)};\n"
         f"const ACCOUNTS = {json.dumps(accounts, ensure_ascii=False)};\n"
         f"const HOLD = {json.dumps(holds)};\n"
+        f"const DWELL = {json.dumps(scene.get('dwellMs') or 0)};\n"
+        f"const THEME = {json.dumps(theme, ensure_ascii=False)};\n"
+        f"const FRAME = {{ width: {w}, height: {h} }};\n"
         "const __cues = [];\n"
+        "const __marks = [];\n"
         "let __t0 = 0;\n"
         f"{prelude}\n"
         f"{project_prelude}\n"
@@ -96,7 +100,7 @@ def build_script(sid, scene, body, *, prelude, project_prelude, base, accounts, 
         "  __ms = Date.now() - __t0;\n"
         "  await stopRec();\n"
         "}\n"
-        "return JSON.stringify({ ms: __ms, cues: __cues });\n"
+        "return JSON.stringify({ ms: __ms, cues: __cues, marks: __marks });\n"
         "}\n"
     )
 
@@ -129,11 +133,24 @@ def main(argv=None):
     acc_path = demo_dir / ".accounts.json"
     accounts = common.load_json(acc_path) if acc_path.exists() else {}
 
-    vid = sb.get("video") or {}
-    w, h = vid.get("width", 1280), vid.get("height", 720)
-    base = sb.get("baseUrl", "")
+    version = common.schema_version(sb)
+    w, h = common.frame_size(sb)
+    base = common.base_url(sb, demo_dir)
+    theme = common.load_theme()
 
-    scenes = sb.get("scenes") or []
+    scenes = list(sb.get("scenes") or [])
+    generated = {}
+    if version >= 2:
+        # Intro/outro cards are rendered like scenes when they come from the HTML
+        # template; user videos are normalized by compose instead.
+        if (sb.get("intro") or {}).get("source") == "html":
+            scenes.insert(0, {"id": "00-intro", "kind": "intro", "steps": []})
+            generated["00-intro"] = bodygen.intro_body(sb["intro"])
+        if (sb.get("outro") or {}).get("source") == "html":
+            scenes.append({"id": "99-outro", "kind": "outro", "steps": []})
+            generated["99-outro"] = bodygen.outro_body(sb["outro"])
+        for sc in sb.get("scenes") or []:
+            generated[sc["id"]] = bodygen.scene_body(sc)
     wanted = args.ids or [s["id"] for s in scenes]
     by_id = {s["id"]: s for s in scenes}
     unknown = [i for i in wanted if i not in by_id]
@@ -143,10 +160,18 @@ def main(argv=None):
     bodies, missing = {}, []
     for sid in wanted:
         p = scenes_dir / f"{sid}.body.js"
-        if not p.exists():
+        existing = p.read_text(encoding="utf-8") if p.exists() else None
+        if sid in generated and (existing is None or bodygen.is_generated(existing)):
+            # Body comes from the storyboard unless someone took it over by hand.
+            if existing != generated[sid]:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(generated[sid], encoding="utf-8")
+            bodies[sid] = generated[sid]
+            continue
+        if existing is None:
             missing.append(common.rel(p, project))
             continue
-        bodies[sid] = p.read_text(encoding="utf-8")
+        bodies[sid] = existing
     if missing:
         common.die("scene bodies not written yet:\n  " + "\n  ".join(missing))
 
@@ -154,7 +179,7 @@ def main(argv=None):
     for sid, body in bodies.items():
         rel_webm = common.rel(scenes_dir / f"{sid}.webm", project)
         script = build_script(sid, by_id[sid], body, prelude=prelude, project_prelude=project_prelude,
-                              base=base, accounts=accounts, w=w, h=h, rel_webm=rel_webm)
+                              base=base, accounts=accounts, w=w, h=h, rel_webm=rel_webm, theme=theme, version=version)
         out = build_dir / f"{sid}.js"
         out.write_text(script, encoding="utf-8")
         built[sid] = out
@@ -173,7 +198,7 @@ def main(argv=None):
     if r.returncode != 0:
         common.die("playwright-cli open failed:\n" + (r.stderr or r.stdout).strip())
 
-    auth = sb.get("authState")
+    auth = sb.get("authState") or (sb.get("meta") or {}).get("authState")
     if auth:
         auth_path = Path(auth) if Path(auth).is_absolute() else project / auth
         if auth_path.exists():
@@ -192,16 +217,19 @@ def main(argv=None):
         if r.returncode != 0 or not webm.exists():
             failed.append(sid)
             msg = (r.stdout or "") + (r.stderr or "")
-            tail = "\n    ".join(msg.strip().splitlines()[-6:])
+            # Drop playwright-cli's update banner so the real error is what shows.
+            lines = [l for l in msg.strip().splitlines() if l.strip() and l.lstrip()[0] not in "║╔╚"]
+            tail = "\n    ".join(lines[-8:])
             print(f"  {sid:<20} FAILED\n    {tail}", file=sys.stderr)
             continue
 
         raw_dur = common.duration(webm)
-        elapsed, cues = None, []
+        elapsed, cues, marks = None, [], []
         try:
             payload = json.loads(json.loads(r.stdout.strip()))
             elapsed = float(payload["ms"]) / 1000.0
             cues = payload.get("cues") or []
+            marks = payload.get("marks") or []
         except (ValueError, KeyError, TypeError):
             print(f"  warning: {sid} did not report its timing - no cues for narration or srt",
                   file=sys.stderr)
@@ -211,7 +239,7 @@ def main(argv=None):
             for c in cues:
                 if c.get("endMs") is None:
                     c["endMs"] = int(elapsed * 1000) if elapsed else c["startMs"] + 2000
-            common.dump_json(scenes_dir / f"{sid}.timing.json", {"sceneId": sid, "cues": cues})
+            common.dump_json(scenes_dir / f"{sid}.timing.json", {"sceneId": sid, "cues": cues, "marks": marks})
 
         note = ""
         if elapsed and raw_dur - elapsed > 0.15:
@@ -221,7 +249,7 @@ def main(argv=None):
                 note = f"  (tail trim failed, {raw_dur - elapsed:.2f}s of frozen frame left)"
         actual = common.duration(webm)
 
-        planned = by_id[sid].get("dwellMs") or by_id[sid].get("durationMs")
+        planned = by_id[sid].get("dwellMs") or by_id[sid].get("durationMs") or by_id[sid].get("holdMs")
         if planned:
             note += f"  storyboard {planned / 1000:.2f}s"
         print(f"  {sid:<20} {actual:>6.2f}s{note}")

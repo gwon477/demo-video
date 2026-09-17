@@ -10,6 +10,8 @@ You therefore cannot import a helper library. `dv.py render` inlines `scripts/pr
 
 ## Scene bodies
 
+With schemaVersion 2, `dv.py render` generates every body from the storyboard (marker line `// @generated`). Remove the marker to take a body over by hand - only for logic the action list cannot express.
+
 A scene body (`demo/scenes/<id>.body.js`) is **statements only** - no wrapper, no exports:
 
 ```js
@@ -23,8 +25,10 @@ await sub.dispose();
 
 ```js
 async page => {
-  const BASE = '<baseUrl>';
+  const BASE = '<app url from config.json>';
   const ACCOUNTS = { /* demo/.accounts.json, gitignored */ };
+  const HOLD = [ /* holdMs per step */ ], DWELL = <scene dwellMs>;
+  const THEME = { /* assets/theme.json */ }, FRAME = { width, height };
   /* prelude.js */
   await startRec('demo/scenes/<id>.webm', { width, height });
   const __t0 = Date.now();

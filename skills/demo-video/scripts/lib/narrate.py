@@ -108,7 +108,8 @@ def main(argv=None):
     sb = common.load_json(sb_path)
     demo_dir = sb_path.parent
     audio_dir = demo_dir / "audio"
-    name = sb.get("name") or "demo"   # narration 파일을 스토리보드별로 분리
+    name = common.name_of(sb)   # narration 파일을 스토리보드별로 분리
+    version = common.schema_version(sb)
 
     cfg = sb.get("narration") or {}
     if cfg.get("enabled") is False:
@@ -128,26 +129,27 @@ def main(argv=None):
     for scene in sb.get("scenes") or []:
         sid = scene["id"]
         idx = 0
-        for step in common.steps_of(scene):
-            if step.get("action") != "subtitle":
-                continue
-            if step.get("narration") is False:      # subtitle only, stay silent
-                silent = reading_ms(step.get("text", ""))
+        for item in common.subtitle_steps(scene, version):
+            step = item["step"]
+            # v2 keeps text/narration under step.subtitle; v1 on the step itself.
+            sub = step["subtitle"] if version >= 2 else step
+            if sub.get("narration") is False:      # subtitle only, stay silent
+                silent = reading_ms(sub.get("text", ""))
                 if step.get("holdMs") != silent:
                     changed.append((sid, idx, step.get("holdMs"), silent))
                     step["holdMs"] = silent         # no voice: silent reading speed
                 idx += 1
                 continue
-            text = step.get("narration") or step.get("text")
+            text = sub.get("narration") or sub.get("text")
             if not text:
                 idx += 1
                 continue
 
             if auto:
-                annotated, notes = auto_prosody(text, step.get("emphasis"))
+                annotated, notes = auto_prosody(text, sub.get("emphasis"))
                 if notes:
                     prosody.append((sid, idx, notes))
-                    step["narration"] = annotated   # written back so it is editable
+                    sub["narration"] = annotated   # written back so it is editable
                     text = annotated
 
             rel = f"audio/{sid}-{idx}.aiff"

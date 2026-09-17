@@ -17,7 +17,7 @@ import argparse
 import re
 import sys
 
-from . import common
+from . import bodygen, common
 from .compose import find_narration
 
 MARGIN_MS = 150       # a cue may be this much shorter than its line and still pass
@@ -33,20 +33,24 @@ def main(argv=None):
     demo_dir = sb_path.parent
     scenes_dir = demo_dir / "scenes"
 
-    narration = find_narration(demo_dir, sb.get("name") or "demo")
+    version = common.schema_version(sb)
+    narration = find_narration(demo_dir, common.name_of(sb))
     nar_by_key = {(l["sceneId"], l["index"]): l for l in (narration or {}).get("lines", [])}
 
     errors, warnings, checked = [], [], 0
 
     for scene in sb.get("scenes") or []:
         sid = scene["id"]
-        steps = [s for s in common.steps_of(scene) if s.get("action") == "subtitle"]
+        steps = common.subtitle_steps(scene, version)
 
         body_path = scenes_dir / f"{sid}.body.js"
-        if not body_path.exists():
+        if body_path.exists():
+            body = body_path.read_text(encoding="utf-8")
+        elif version >= 2:
+            body = bodygen.scene_body(scene)      # what render will generate
+        else:
             errors.append(f"{sid}: no body at scenes/{sid}.body.js")
             continue
-        body = body_path.read_text(encoding="utf-8")
 
         # 1. storyboard steps vs subtitle-producing calls
         calls = (len(re.findall(r"\bsubtitle\s*\(", body))

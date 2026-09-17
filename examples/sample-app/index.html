@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Camino - 대시보드</title><link rel="stylesheet" href="app.css"></head>
+<body>
+<header>
+  <div class="logo">Camino</div>
+  <nav>
+    <a href="index.html">대시보드</a>
+    <a href="board.html">우선순위 보드</a>
+    <a href="upload.html">결과 업로드</a>
+    <a href="chat.html">분석 도우미</a>
+    <a href="settings.html">설정</a>
+  </nav>
+  <div class="kbd-hint">명령 팔레트 <kbd>⌘</kbd> <kbd>K</kbd></div>
+</header>
+<div id="palette"><div class="box"><input type="text" placeholder="명령 또는 화면 이름 입력..." aria-label="명령 팔레트"></div></div>
+<main>
+
+<h1>오늘의 테스트 현황</h1>
+<p class="sub">야간 실행 결과 요약과 실패 원인을 확인합니다</p>
+<div class="grid" data-testid="stat-grid">
+  <div class="card"><div class="k">전체 실행</div><div class="v">1,284</div><div class="d up">+32 어제 대비</div></div>
+  <div class="card"><div class="k">통과율</div><div class="v">97.4%</div><div class="d up">+0.6%p</div></div>
+  <div class="card" data-testid="stat-fail"><div class="k">실패</div><div class="v">3</div><div class="d down">신규 2건</div></div>
+  <div class="card"><div class="k">평균 소요</div><div class="v">4m 12s</div><div class="d">변동 없음</div></div>
+</div>
+<div class="row">
+  <div class="panel">
+    <table data-testid="fail-list"><thead><tr><th>상태</th><th>테스트</th><th>파일</th><th>추이</th></tr></thead>
+    <tbody><tr class="fail" data-testid="fail-row-1" data-name="login-flow" data-msg="셀렉터 변경: [data-testid=submit] 없음"><td>실패</td><td>login-flow</td><td>auth/login.spec.ts</td><td><span class="badge" data-tip="마지막 성공: 어제 09:12">3회 연속</span></td></tr><tr class="fail" data-testid="fail-row-2" data-name="checkout-total" data-msg="expected 42,000 received 45,000"><td>실패</td><td>checkout-total</td><td>cart/total.spec.ts</td><td><span class="badge" data-tip="마지막 성공: 어제 09:12">3회 연속</span></td></tr><tr class="fail" data-testid="fail-row-3" data-name="export-csv" data-msg="파일 이름 형식 불일치: 2026-9-17 vs 2026-09-17"><td>실패</td><td>export-csv</td><td>report/export.spec.ts</td><td><span class="badge" data-tip="마지막 성공: 어제 09:12">3회 연속</span></td></tr><tr><td>통과</td><td>case-001</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-002</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-003</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-004</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-005</td><td>suite/5.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-006</td><td>suite/6.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-007</td><td>suite/0.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-008</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-009</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-010</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-011</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-012</td><td>suite/5.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-013</td><td>suite/6.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-014</td><td>suite/0.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-015</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-016</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-017</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-018</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-019</td><td>suite/5.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-020</td><td>suite/6.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-021</td><td>suite/0.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-022</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-023</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-024</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-025</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-026</td><td>suite/5.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-027</td><td>suite/6.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-028</td><td>suite/0.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-029</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-030</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-031</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-032</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-033</td><td>suite/5.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-034</td><td>suite/6.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-035</td><td>suite/0.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-036</td><td>suite/1.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-037</td><td>suite/2.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-038</td><td>suite/3.spec.ts</td><td><span class="badge">안정</span></td></tr><tr><td>통과</td><td>case-039</td><td>suite/4.spec.ts</td><td><span class="badge">안정</span></td></tr></tbody></table>
+  </div>
+  <div>
+    <div class="panel" data-testid="fail-detail" hidden>
+      <h3 data-testid="fail-detail-name">-</h3>
+      <p data-testid="fail-detail-msg">-</p>
+      <button class="primary" data-testid="rerun">다시 실행</button>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>실행 로그</h3>
+      <div class="scroll" data-testid="log-scroll"><div class="sticky">nightly-2026-09-17 · 44 steps</div><div class="line">01:07  step 1: 페이지 이동 후 요소 확인 - 통과</div><div class="line">02:14  step 2: 페이지 이동 후 요소 확인 - 통과</div><div class="line">03:21  step 3: 페이지 이동 후 요소 확인 - 경고</div><div class="line">04:28  step 4: 페이지 이동 후 요소 확인 - 통과</div><div class="line">05:35  step 5: 페이지 이동 후 요소 확인 - 통과</div><div class="line">06:42  step 6: 페이지 이동 후 요소 확인 - 통과</div><div class="line">07:49  step 7: 페이지 이동 후 요소 확인 - 경고</div><div class="line">08:56  step 8: 페이지 이동 후 요소 확인 - 통과</div><div class="line">09:03  step 9: 페이지 이동 후 요소 확인 - 통과</div><div class="line">10:10  step 10: 페이지 이동 후 요소 확인 - 통과</div><div class="line">11:17  step 11: 페이지 이동 후 요소 확인 - 경고</div><div class="line">12:24  step 12: 페이지 이동 후 요소 확인 - 통과</div><div class="line">13:31  step 13: 페이지 이동 후 요소 확인 - 통과</div><div class="line">14:38  step 14: 페이지 이동 후 요소 확인 - 통과</div><div class="line">15:45  step 15: 페이지 이동 후 요소 확인 - 경고</div><div class="line">16:52  step 16: 페이지 이동 후 요소 확인 - 통과</div><div class="line">17:59  step 17: 페이지 이동 후 요소 확인 - 통과</div><div class="line">18:06  step 18: 페이지 이동 후 요소 확인 - 통과</div><div class="line">19:13  step 19: 페이지 이동 후 요소 확인 - 경고</div><div class="line">20:20  step 20: 페이지 이동 후 요소 확인 - 통과</div><div class="line">21:27  step 21: 페이지 이동 후 요소 확인 - 통과</div><div class="line">22:34  step 22: 페이지 이동 후 요소 확인 - 통과</div><div class="line">23:41  step 23: 페이지 이동 후 요소 확인 - 경고</div><div class="line">24:48  step 24: 페이지 이동 후 요소 확인 - 통과</div><div class="line">25:55  step 25: 페이지 이동 후 요소 확인 - 통과</div><div class="line">26:02  step 26: 페이지 이동 후 요소 확인 - 통과</div><div class="line">27:09  step 27: 페이지 이동 후 요소 확인 - 경고</div><div class="line">28:16  step 28: 페이지 이동 후 요소 확인 - 통과</div><div class="line">29:23  step 29: 페이지 이동 후 요소 확인 - 통과</div><div class="line">30:30  step 30: 페이지 이동 후 요소 확인 - 통과</div><div class="line">31:37  step 31: 페이지 이동 후 요소 확인 - 경고</div><div class="line">32:44  step 32: 페이지 이동 후 요소 확인 - 통과</div><div class="line">33:51  step 33: 페이지 이동 후 요소 확인 - 통과</div><div class="line">34:58  step 34: 페이지 이동 후 요소 확인 - 통과</div><div class="line">35:05  step 35: 페이지 이동 후 요소 확인 - 경고</div><div class="line">36:12  step 36: 페이지 이동 후 요소 확인 - 통과</div><div class="line">37:19  step 37: 페이지 이동 후 요소 확인 - 통과</div><div class="line">38:26  step 38: 페이지 이동 후 요소 확인 - 통과</div><div class="line">39:33  step 39: 페이지 이동 후 요소 확인 - 경고</div><div class="line">40:40  step 40: 페이지 이동 후 요소 확인 - 통과</div><div class="line">41:47  step 41: 페이지 이동 후 요소 확인 - 통과</div><div class="line">42:54  step 42: 페이지 이동 후 요소 확인 - 통과</div><div class="line">43:01  step 43: 페이지 이동 후 요소 확인 - 경고</div><div class="line">44:08  step 44: 페이지 이동 후 요소 확인 - 통과</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+<script src="app.js"></script></body></html>

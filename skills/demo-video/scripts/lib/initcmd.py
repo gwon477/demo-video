@@ -25,6 +25,8 @@ GITIGNORE_LINES = [
     "demo/.auth/",
     "demo/.auth.json",
     "demo/.accounts.json",
+    "demo/shots/",
+    ".playwright-cli/",
 ]
 
 

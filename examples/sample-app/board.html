@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Camino - 우선순위 보드</title><link rel="stylesheet" href="app.css"></head>
+<body>
+<header>
+  <div class="logo">Camino</div>
+  <nav>
+    <a href="index.html">대시보드</a>
+    <a href="board.html">우선순위 보드</a>
+    <a href="upload.html">결과 업로드</a>
+    <a href="chat.html">분석 도우미</a>
+    <a href="settings.html">설정</a>
+  </nav>
+  <div class="kbd-hint">명령 팔레트 <kbd>⌘</kbd> <kbd>K</kbd></div>
+</header>
+<div id="palette"><div class="box"><input type="text" placeholder="명령 또는 화면 이름 입력..." aria-label="명령 팔레트"></div></div>
+<main>
+
+<h1>우선순위 보드</h1>
+<p class="sub">드래그로 순서를 바꾸면 야간 실행 순서에 즉시 반영됩니다</p>
+<div class="row">
+  <div class="panel"><h3>포인터 드래그 (dnd-kit 방식)</h3><ul class="list" data-testid="pointer-list"><li data-id="p1" data-testid="pointer-card-1"><span class="handle" aria-label="드래그 핸들" data-testid="pointer-handle-1">⋮⋮</span><span class="editable" data-testid="pointer-name-1">로그인 흐름</span></li><li data-id="p2" data-testid="pointer-card-2"><span class="handle" aria-label="드래그 핸들" data-testid="pointer-handle-2">⋮⋮</span><span class="editable" data-testid="pointer-name-2">결제 합계</span></li><li data-id="p3" data-testid="pointer-card-3"><span class="handle" aria-label="드래그 핸들" data-testid="pointer-handle-3">⋮⋮</span><span class="editable" data-testid="pointer-name-3">CSV 내보내기</span></li><li data-id="p4" data-testid="pointer-card-4"><span class="handle" aria-label="드래그 핸들" data-testid="pointer-handle-4">⋮⋮</span><span class="editable" data-testid="pointer-name-4">알림 설정</span></li><li data-id="p5" data-testid="pointer-card-5"><span class="handle" aria-label="드래그 핸들" data-testid="pointer-handle-5">⋮⋮</span><span class="editable" data-testid="pointer-name-5">권한 변경</span></li></ul><p class="status">순서: <span data-testid="pointer-order">p1 > p2 > p3 > p4 > p5</span></p></div>
+  <div class="panel"><h3>네이티브 드래그 (HTML5 draggable)</h3><ul class="list" data-testid="html5-list"><li draggable="true" data-id="h1" data-testid="html5-card-1" data-ctx="로그인 흐름"><span class="handle">⋮⋮</span>로그인 흐름</li><li draggable="true" data-id="h2" data-testid="html5-card-2" data-ctx="결제 합계"><span class="handle">⋮⋮</span>결제 합계</li><li draggable="true" data-id="h3" data-testid="html5-card-3" data-ctx="CSV 내보내기"><span class="handle">⋮⋮</span>CSV 내보내기</li><li draggable="true" data-id="h4" data-testid="html5-card-4" data-ctx="알림 설정"><span class="handle">⋮⋮</span>알림 설정</li><li draggable="true" data-id="h5" data-testid="html5-card-5" data-ctx="권한 변경"><span class="handle">⋮⋮</span>권한 변경</li></ul><p class="status">순서: <span data-testid="html5-order">h1 > h2 > h3 > h4 > h5</span></p><p class="status">우클릭: <span data-testid="ctx-result">-</span></p></div>
+</div>
+<div class="menu" id="ctx-menu"><div>맨 위로</div><div>보류</div><div>삭제</div></div>
+
+</main>
+<script src="app.js"></script></body></html>
