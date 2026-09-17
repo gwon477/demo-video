@@ -152,7 +152,15 @@ Produces `demo/output/<name>.mp4` (H.264, encoded once), `<name>.srt`, and `demo
 
 For a first look use `render --draft` then `compose --draft` (960px, cuts, no audio) - it takes less than half the time and leaves the full-size cache alone.
 
-`verify` writes `demo/output/verify-tile.png`. **Read it** and confirm the intro card, subtitles, and effects are visible before reporting. Then report the path, runtime, and whether narration and BGM are included. Stop: G4.
+`verify` writes `demo/output/verify-tile.png`. **Read it** and confirm the intro card, subtitles, and effects are visible.
+
+## Phase 5.5 - Red-team review
+
+```bash
+python3 <skill>/scripts/dv.py review             # per-scene strips, effect/cue/timing findings, transition frames
+```
+
+Review the recorded video, not the storyboard, as three people - PD (연출), user (시청자), critic (평론가) - with the checklist in `references/review.md`, reading every strip. Write `demo/review.md` with a verdict, findings (persona, scene, severity, evidence frame, fix) and the fix plan routed through the feedback table. Fix every `fail` (storyboard → validate → approve → render changed scenes → compose → verify → review), then report the path, runtime, whether narration and BGM are included, and the review verdict with the remaining `warn`/`note` items. Stop: G4.
 
 Layout:
 

@@ -87,6 +87,23 @@ class ComposeVerifyTest(ProjectCase):
         code, out, err = dv("verify", cwd=self.project)
         self.assertEqual(code, 0, out + err)
 
+    def test_review_packet_and_missing_effect(self):
+        dv("compose", cwd=self.project)
+        code, out, err = dv("review", "--json", cwd=self.project)
+        self.assertEqual(code, 0, err)
+        rep = json.loads(out)
+        self.assertEqual([s["id"] for s in rep["scenes"]], ["00-intro", "01-a", "02-b", "99-outro"])
+        self.assertTrue((self.demo / "output" / "review" / "01-a.png").exists())
+        self.assertTrue((self.demo / "output" / "review-transitions.png").exists())
+        self.assertEqual(len(rep["boundaries"]), 3)
+        # a zoom in the storyboard with no zoomIn mark recorded is a fail
+        self.sb["scenes"][0]["steps"][0]["actions"] = [{"type": "zoom", "target": "#x"}, {"type": "zoomOut"}]
+        self.write_json("demo/storyboard.json", self.sb)
+        code, out, err = dv("review", "--json", cwd=self.project)
+        self.assertEqual(code, 1)
+        rep = json.loads(out)
+        self.assertTrue(any(f["kind"] == "effect" and f["severity"] == "fail" for f in rep["findings"]))
+
     def test_verify_fails_on_black_frame(self):
         make_clip(self.scenes / "02-b.webm", 3.0, color="black")
         dv("compose", cwd=self.project)

@@ -202,7 +202,8 @@ flowchart TD
 | 3.5 나레이션 | `narrate`로 음성 생성, hold/dwell 확장 | 늘어난 러닝타임만 보고 |
 | 4 렌더 | 장면별 body 작성, `render` | 없음 |
 | 4.5 싱크 | `check-sync` 실패 시 해당 장면만 수정 후 재렌더 | 없음 |
-| 5 합성 | `compose`, 프레임 타일과 볼륨으로 실제 확인 | 영상 경로, 러닝타임, 나레이션 포함 여부 |
+| 5 합성 | `compose`, `verify` 프레임 타일과 볼륨으로 실제 확인 | 없음 |
+| 5.5 레드팀 검토 | `review` 패킷을 PD·시청자·평론가로 검토해 `review.md` 작성, `fail`은 고쳐서 재검토 | 판정, 남은 warn/note, 영상 경로, 러닝타임, 나레이션·BGM 포함 여부 |
 
 **피드백 라우팅** (`references/feedback.md`에 같은 표를 둔다)
 
@@ -382,6 +383,7 @@ flowchart TD
 | `check-sync` | storyboard, body, narration, timing → 결과 | 스텝 수와 자막 호출 수, 자막 문구 일치, 음성 파일 존재, 큐 노출 시간이 음성 길이 이상인지 | 불일치 1건 이상 |
 | `compose [--draft]` | 클립들 → mp4, srt | 인트로/아웃트로 정규화, `xfade` 전환, 나레이션 mux, BGM 처리(FR-078), H.264 1회 인코딩 | check-sync 미통과 |
 | `verify` | mp4 → 프레임 타일, 음량 수치 | 장면마다 1프레임을 뽑아 타일 이미지 생성, 나레이션 큐 1곳과 무음 1곳의 `max_volume` 측정, 통합 LUFS와 트루피크 측정, 줌 구간 프레임에서 자막 박스가 타이틀 세이프(88%) 안에 있는지 검사 | 검은 프레임, 나레이션 구간 무음, LUFS가 목표 ±1 LU 밖, 자막이 안전 영역 밖 |
+| `review` | mp4, storyboard, timing → `output/review.json`, 장면별 스트립, 전환 스트립 | 계획 대비 클립 길이, storyboard 액션 ↔ 녹화 마크 대조(빠진 효과), 자막 수·문구·간격, 장면마다 첫 프레임·자막 시작·효과 시점·끝 프레임 스트립, 전환 경계 전후 프레임, 4초 이상 정지 구간. 에이전트는 이 패킷을 PD·시청자·평론가 세 페르소나로 검토해 `demo/review.md`를 쓴다(`references/review.md`) | 효과 마크 누락, 자막 불일치 |
 | `status` | `state.json` → 현재 단계 | 어느 게이트까지 통과했고 다음에 무엇을 할지 출력. 세션이 끊긴 뒤 에이전트가 이어받을 때 쓴다 | - |
 | `bgm fetch / pick / probe` | catalog.json, 컨셉 프로필 → 음원 묶음, 상위 3곡, 사용자 파일 측정값 | fetch는 Release 자산을 받아 sha256 검증. pick은 verified 트랙만 대상으로 점수 계산(FR-075, FR-076). probe는 사용자 제공 파일의 길이와 음량을 재고 config에 등록 | sha256 불일치, 조건에 맞는 verified 트랙 없음 |
 

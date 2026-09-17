@@ -17,6 +17,7 @@ Commands (more land per DESIGN.md section 7):
   check-sync   verify storyboard, bodies, narration and recorded cues agree
   compose      join clips with xfade transitions, mux narration/BGM, encode the mp4 once
   verify       frame tile, black frames, subtitle-under-zoom, loudness; exit 1 on a failure
+  review       red-team packet: per-scene strips, effect/cue/timing findings, transition frames, static spans
   bgm          probe <file>: register the user's BGM in config.json
   narrate      generate narration audio and widen subtitle holds to fit it
   version      print the skill version
@@ -40,6 +41,7 @@ COMMANDS = {
     "check-sync": "lib.checksync",
     "compose": "lib.compose",
     "verify": "lib.verify",
+    "review": "lib.review",
     "bgm": "lib.bgm",
     "narrate": "lib.narrate",
 }

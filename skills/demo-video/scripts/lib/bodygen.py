@@ -78,6 +78,9 @@ def action_js(a):
 def scene_body(scene):
     lines = [GENERATED_MARK]
     # Off-camera setup: navigate and run setup actions before recording starts.
+    # Scenes share a browser session; a goto that only changes the hash would keep the
+    # SPA's in-memory state from the previous scene, so leave the document first.
+    lines.append("await page.goto('about:blank');")
     lines.append(f"await page.goto(BASE + {js(scene['url'])});")
     lines.append("await page.waitForLoadState('networkidle');")
     if scene.get("waitFor"):

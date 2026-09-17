@@ -49,7 +49,7 @@ await openCase('RA-2026-133');
 await subtitleSpan('…', HOLD[0], async () => { … });
 ```
 
-**Every scene must establish its own state.** `dv.py render` runs scenes in one browser, so state carries over - but a scene that relies on the previous one breaks the moment you re-render it alone, and one failure cascades through the rest. Put a login routine in `demo/prelude.js` (injected into every body) and call it at the top of each scene that needs a session.
+**Every scene must establish its own state.** Generated bodies go through `about:blank` before their `goto`, because a hash-only navigation keeps a single-page app's memory from the previous scene. Do the same in a hand-written body. `dv.py render` runs scenes in one browser, so state carries over - but a scene that relies on the previous one breaks the moment you re-render it alone, and one failure cascades through the rest. Put a login routine in `demo/prelude.js` (injected into every body) and call it at the top of each scene that needs a session.
 
 Credentials go in `demo/.accounts.json` (add it to `.gitignore`) and are reached as `ACCOUNTS.<key>.<field>`. Never type a password into a scene body or the storyboard.
 
