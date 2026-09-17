@@ -1,0 +1,73 @@
+{
+  "name": "camino-demo-draft",
+  "baseUrl": "http://127.0.0.1:8765",
+  "resolution": "960x540",
+  "fps": 25,
+  "durationSec": 58.62,
+  "draft": true,
+  "narration": null,
+  "bgm": null,
+  "subtitleCues": 9,
+  "notes": [],
+  "scenes": [
+    {
+      "id": "00-intro",
+      "durationSec": 2.5,
+      "startSec": 0.0
+    },
+    {
+      "id": "01-dashboard-fail",
+      "durationSec": 6.76,
+      "startSec": 2.5
+    },
+    {
+      "id": "02-dashboard-log",
+      "durationSec": 8.92,
+      "startSec": 9.26
+    },
+    {
+      "id": "03-dashboard-palette",
+      "durationSec": 6.96,
+      "startSec": 18.18
+    },
+    {
+      "id": "04-board-drag",
+      "durationSec": 5.24,
+      "startSec": 25.14
+    },
+    {
+      "id": "05-board-edit",
+      "durationSec": 3.96,
+      "startSec": 30.38
+    },
+    {
+      "id": "06-board-html5",
+      "durationSec": 4.84,
+      "startSec": 34.34
+    },
+    {
+      "id": "07-upload-drop",
+      "durationSec": 5.36,
+      "startSec": 39.18
+    },
+    {
+      "id": "08-upload-slider",
+      "durationSec": 4.2,
+      "startSec": 44.54
+    },
+    {
+      "id": "09-chat",
+      "durationSec": 6.92,
+      "startSec": 48.74
+    },
+    {
+      "id": "99-outro",
+      "durationSec": 2.96,
+      "startSec": 55.66
+    }
+  ],
+  "outputs": [
+    "output/camino-demo-draft.mp4",
+    "output/camino-demo-draft.srt"
+  ]
+}

@@ -141,48 +141,35 @@ cue on-screen    >=  its narration length          the voice fits the subtitle
 
 Exit 1 means the video would be out of sync. Fix it and re-render the named scene - do not compose. Run it once after writing the bodies too; catching drift there saves a render.
 
-## Phase 5 - Compose and file
+## Phase 5 - Compose, verify, file
 
 ```bash
-python3 <skill>/scripts/dv.py compose
+python3 <skill>/scripts/dv.py compose            # mp4 + srt + manifest; narration and BGM muxed when present
+python3 <skill>/scripts/dv.py verify             # exit 1 on black frames, subtitle drift under zoom, loudness off target
 ```
 
-Produces `demo/output/<name>.mp4` (H.264), a `.srt` sidecar, and - when `demo/narration.json` exists - the voice-over muxed in as AAC, each line placed at the exact moment its subtitle appeared. Details and transition options: `references/compose.md`.
+Produces `demo/output/<name>.mp4` (H.264, encoded once), `<name>.srt`, and `demo/manifest.json`. A user intro/outro video is normalized and letterboxed if its aspect differs - `compose` says so; pass it on. BGM comes from `dv.py bgm probe <file>` (user file; the catalog is not available yet). Details: `references/compose.md`.
+
+For a first look use `render --draft` then `compose --draft` (960px, cuts, no audio) - it takes less than half the time and leaves the full-size cache alone.
+
+`verify` writes `demo/output/verify-tile.png`. **Read it** and confirm the intro card, subtitles, and effects are visible before reporting. Then report the path, runtime, and whether narration and BGM are included. Stop: G4.
 
 Layout:
 
 ```
 demo/
-├── survey.json          # phase 1, routes / features / locators / density
+├── config.json          # phase 0, app url / size / narration / bgm / intro-outro
+├── survey.json          # phase 1, pages / features / locators / density
 ├── scenario.md          # phase 2, whose job the video shows
-├── storyboard.json      # phase 3, the source of truth
-├── narration.json       # phase 3.5, generated line index + durations
-├── scenes/              # <id>.body.js sources + rendered <id>.webm
-│   ├── <id>.timing.json # exact subtitle cues, written at render time
-│   └── .build/          # assembled scripts (generated, disposable)
-├── audio/               # one .aiff per narration line
-├── output/              # final .mp4 + .srt
-└── manifest.json        # what was rendered, when, from which url
+├── storyboard.json      # phase 3, the source of truth (schemaVersion 2)
+├── sheet.html, shots/   # phase 3, the storyboard sheet and its screenshots
+├── state.json           # approvals with file hashes
+├── narration-<name>.json, audio/   # phase 3.5
+├── scenes/              # <id>.body.js (generated), <id>.webm, <id>.timing.json, .build/, draft/
+├── output/              # <name>.mp4, .srt, verify-tile.png, verify.json
+└── manifest.json
 ```
-
-Verify before reporting done: play the frames, do not just trust exit code 0.
-
-```bash
-ffmpeg -y -v error -i demo/output/<name>.mp4 \
-  -vf "select='not(mod(n\,50))',scale=426:-1,tile=5x4" -frames:v 1 demo/output/check.png
-```
-
-Read `demo/output/check.png`. Confirm the intro card, the subtitles, and the click effects are actually visible.
-
-With narration, also confirm the audio is where it should be - a muxed track that is silent throughout still exits 0:
-
-```bash
-ffmpeg -hide_banner -nostats -ss <cue start> -t 2 -i demo/output/<name>.mp4 \
-  -af volumedetect -f null - 2>&1 | grep max_volume
-```
-
-Around -7 dB means speech; -91 dB is silence. Check one cue and one gap. Then report the path, runtime, and whether narration is included. Stop: G4.
 
 ## Re-recording
 
-The storyboard is the source of truth. To change the demo, edit `demo/storyboard.json`, re-run `dv.py narrate` if any spoken line changed, re-render only the affected scenes, and re-run compose. Never hand-edit a rendered clip or an audio file.
+The storyboard is the source of truth. To change the demo, edit `demo/storyboard.json`, run `validate --fix`, get it approved again, re-run `dv.py narrate` if any spoken line changed, then `render` - the hash cache re-records only the scenes that changed - and `compose`. Never hand-edit a rendered clip or an audio file. Feedback routing by type: `references/feedback.md` (M4).

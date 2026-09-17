@@ -17,7 +17,13 @@
     "provider": "none"
   },
   "bgm": {
-    "source": "none"
+    "source": "file",
+    "path": "/private/tmp/claude-501/-Users-a11769-Desktop-skills/c3ae25a1-ee59-4967-8fcc-bc06c0030a98/scratchpad/tone.wav",
+    "durationSec": 12.0,
+    "loudnessLufs": -32.4,
+    "truePeakDbtp": -28.5,
+    "sha256": "25e94e793eef3d152af5e2a48ded320e583372aa397a1566441ddebc5d5179f8",
+    "probedAt": "2026-09-17T17:33:47+09:00"
   },
   "intro": {
     "source": "html",

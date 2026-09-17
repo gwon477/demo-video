@@ -15,7 +15,9 @@ Commands (more land per DESIGN.md section 7):
   sheet        storyboard + screenshots -> demo/sheet.html for the G3 review
   render       generate/assemble scene bodies with the prelude and record .webm clips (needs G3)
   check-sync   verify storyboard, bodies, narration and recorded cues agree
-  compose      join clips with xfade transitions into an mp4 (+ .srt, narration)
+  compose      join clips with xfade transitions, mux narration/BGM, encode the mp4 once
+  verify       frame tile, black frames, subtitle-under-zoom, loudness; exit 1 on a failure
+  bgm          probe <file>: register the user's BGM in config.json
   narrate      generate narration audio and widen subtitle holds to fit it
   version      print the skill version
 """
@@ -37,6 +39,8 @@ COMMANDS = {
     "render": "lib.render",
     "check-sync": "lib.checksync",
     "compose": "lib.compose",
+    "verify": "lib.verify",
+    "bgm": "lib.bgm",
     "narrate": "lib.narrate",
 }
 

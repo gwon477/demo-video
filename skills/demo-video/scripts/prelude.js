@@ -270,11 +270,12 @@ async function zoom(target, opts = {}) {
     body.style.transform = `scale(${scale})`;
   }, { cx: b.x + b.width / 2, cy: b.y + b.height / 2, scale, ms });
   __zoom.scale = scale;
-  mark('zoomIn', { scale });
+  mark('zoomIn', { scale, ms });          // atMs = start of the zoom-in transition
   await dwell(ms + 50);
 }
 async function zoomOut(opts = {}) {
   const ms = opts.ms ?? T.zoom.outMs;
+  mark('zoomOut', { ms });                // atMs = start of the zoom-out transition
   await page.evaluate(({ ms }) => {
     document.body.style.transition = `transform ${ms}ms ease-in-out`;
     document.body.style.transform = 'scale(1)';
@@ -285,7 +286,6 @@ async function zoomOut(opts = {}) {
     document.documentElement.style.overflow = '';
   });
   __zoom.scale = 1;
-  mark('zoomOut');
 }
 
 // ---------------------------------------------------------------- interactions
