@@ -315,6 +315,19 @@ class LocatorsAndDwellTest(RuleCase):
         self.assertFalse([e for e in f.errors if e["rule"] == "locators"])
         self.assertTrue([w for w in f.warnings if w["rule"] == "locators"])
 
+    def test_density_floor_only_when_page_first_appears(self):
+        sb = base_storyboard()
+        follow = copy.deepcopy(sb["scenes"][0])
+        follow["id"] = "02-a-cont"
+        follow["transitionIn"] = {"type": "cut"}
+        del follow["steps"][0]["subtitle"]["hook"]
+        for sc in (sb["scenes"][0], follow):
+            del sc["dwellMs"]
+        sb["scenes"].append(follow)
+        self.run_v(sb, fix=True)
+        self.assertEqual(sb["scenes"][0]["dwellMs"], 6556)      # density floor on first appearance
+        self.assertEqual(sb["scenes"][1]["dwellMs"], 3600)      # holds 3000 + 1 action, no floor
+
     def test_dwell_fix_and_cap(self):
         sb = base_storyboard()
         del sb["scenes"][0]["dwellMs"]

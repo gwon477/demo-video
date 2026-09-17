@@ -53,7 +53,7 @@
 | `mutates` | scene changes app data. `render --jobs` runs it and everything after it sequentially; `config.resetCommand` runs before it. |
 | `setup` | actions run before recording (off camera). |
 | `steps[]` | one subtitle with the actions that happen under it. First subtitle of the video carries `hook: true` (FR-044). |
-| `holdMs`, `dwellMs` | filled by `validate --fix`. `holdMs = clamp(chars × 125 + 600, 1500, 7000)`, `dwellMs ≥ Σ holdMs + 600 × actions`, scene cap 9s. |
+| `holdMs`, `dwellMs` | filled by `validate --fix`. `holdMs = clamp(chars × 125 + 600, 1500, 7000)`, `dwellMs ≥ Σ holdMs + 600 × actions + gaps`, and at least the density floor when the page first appears (a `cut` scene on the same page pays only the 2.5s minimum). Scene cap 9s. |
 | `interactions[]` | FR-060: what the page can do and whether the video shows it. See `interactions.md`. |
 
 ## Actions

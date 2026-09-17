@@ -338,13 +338,18 @@ def target_sec(demo_dir: Path):
 def check_dwell(sb, theme, survey_density, f, fix, demo_dir=None):
     sc_t = theme["scene"]
     total = 0
+    prev = None
     for sc in sb["scenes"]:
         holds = sum(int(st.get("holdMs") or 0) for st in sc["steps"])
         n_actions = sum(len(st.get("actions") or []) for st in sc["steps"])
         gaps = theme["subtitle"]["gapMs"] * max(0, len(sc["steps"]) - 1)
         need = holds + n_actions * sc_t["actionMs"] + gaps
         density = survey_density.get(sc.get("page") or "", None) or survey_density.get(sc.get("url") or "", None)
-        floor = dwell_from_density(density, theme) if density else sc_t["minMs"]
+        # The density floor is the time to take a screen in when it first appears. A scene
+        # that continues the same page with a cut does not pay it again.
+        continues = prev is not None and prev.get("url") == sc.get("url") and (sc.get("transitionIn") or {}).get("type") == "cut"
+        floor = dwell_from_density(density, theme) if (density and not continues) else sc_t["minMs"]
+        prev = sc
         want = max(need, floor)
         cur = sc.get("dwellMs")
         if fix and (cur is None or cur < want):

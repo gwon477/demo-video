@@ -29,7 +29,8 @@ CAPTURE_JS = """async page => {
       const boxes = {};
       for (const sel of sc.targets) {
         try {
-          const b = await page.locator(sel).first().boundingBox();
+          // Targets that only exist after an action (a dialog, an answer) are simply not boxed.
+          const b = await page.locator(sel).first().boundingBox({ timeout: 1500 });
           if (b) boxes[sel] = b;
         } catch (e) { boxes[sel] = null; }
       }
