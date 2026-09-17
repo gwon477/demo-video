@@ -1,0 +1,858 @@
+{
+  "schemaVersion": 1,
+  "status": "draft — 모든 트랙 verified:false. 자동 선택(bgm pick)은 verified:true 트랙만 대상으로 한다.",
+  "generatedAt": "2026-09-17",
+  "vocabulary": {
+    "mood": [
+      "calm",
+      "focused",
+      "warm",
+      "bright",
+      "confident",
+      "inspiring",
+      "playful",
+      "futuristic",
+      "serious"
+    ],
+    "energy": "1(매우 잔잔) ~ 5(매우 강함)",
+    "density": [
+      "sparse",
+      "medium",
+      "busy"
+    ]
+  },
+  "taggingNotes": [
+    "mood와 energy는 청취가 아니라 작곡가가 제목에 붙인 분위기 표기, 앨범 설명, 장르 태그로 추정한 1차 값이다.",
+    "density, bpm, loopable, vocals는 추정하지 않고 비워 두었다. 청취와 측정으로 채운다.",
+    "verified를 true로 바꾸기 전 확인: 보컬·음성 샘플 없음, mood/energy 타당, 나레이션 밑에 깔아도 방해되지 않는지(density), 시작부 무음 길이, 루프 이음새."
+  ],
+  "verificationChecklist": [
+    "트랙 페이지에서 CC0 표기와 Instrumental: Yes 확인 → licenseEvidence.level을 track으로",
+    "파일을 받아 sha256, durationSec, loudnessLufs 기록 (dv.py bgm probe)",
+    "전곡 청취: 보컬/음성 샘플 유무 → vocals",
+    "mood 1~2개, energy, density 확정",
+    "verified, verifiedBy, verifiedAt 기록"
+  ],
+  "gaps": [
+    {
+      "mood": "confident",
+      "note": "임원 대상·신뢰 강조용 후보가 2곡뿐이고 둘 다 energy 4다. energy 2~3의 차분하고 단단한 곡이 필요하다."
+    },
+    {
+      "mood": "serious",
+      "note": "후보 없음. 규제·보안·품질 도메인용."
+    },
+    {
+      "mood": "inspiring",
+      "note": "후보 1곡. 전형적 기업 홍보 사운드는 CC0에 드물다. CC BY 4.0 허용 여부를 정해야 채울 수 있다."
+    },
+    {
+      "risk": "single-artist",
+      "note": "20곡 모두 한 작곡가다. 음색이 비슷해질 수 있고 출처 의존도가 높다. 아래 sourcesToReview에서 보강한다."
+    }
+  ],
+  "sourcesToReview": [
+    {
+      "name": "Maarten Schellekens — PUBLIC DOMAIN (FMA)",
+      "url": "https://freemusicarchive.org/music/maarten-schellekens/public-domain-1",
+      "license": "CC0",
+      "for": [
+        "warm",
+        "serious",
+        "confident"
+      ],
+      "note": "어쿠스틱·재즈·앰비언트. 보컬 곡이 섞여 있어 선별 필요"
+    },
+    {
+      "name": "OpenGameArt — CC0 Upbeat / Electronic 모음",
+      "url": "https://opengameart.org/content/cc0-upbeat-electronic-music",
+      "license": "CC0(모음 기준, 곡별 확인 필요)",
+      "for": [
+        "futuristic",
+        "focused"
+      ],
+      "note": "게임 음악 색이 강함. 곡 페이지에서 라이선스 개별 확인"
+    },
+    {
+      "name": "HoliznaCC0 — Only In The Milky Way Part 1/2",
+      "url": "https://freemusicarchive.org/music/holiznacc0/only-in-the-milky-way-part-1",
+      "license": "CC0",
+      "for": [
+        "futuristic",
+        "serious"
+      ],
+      "note": "로파이와 빈티지 SF 사운드트랙 풍의 연주 앨범"
+    },
+    {
+      "name": "free-stock-music.com — Corporate",
+      "url": "https://www.free-stock-music.com/corporate.html",
+      "license": "대부분 CC BY 4.0",
+      "for": [
+        "inspiring",
+        "confident",
+        "bright"
+      ],
+      "note": "표기 조건부. requiresAttribution:true로만 추가"
+    }
+  ],
+  "excludedSources": [
+    {
+      "name": "Pixabay Music",
+      "reason": "Content License가 음원의 단독 배포를 금지. 번들 불가, 사용자 개별 파일로는 사용 가능"
+    },
+    {
+      "name": "FreePD.com 및 미러",
+      "reason": "원 사이트 폐쇄. 미러는 출처 검증 불가"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "calm-currents",
+      "title": "Calm Currents",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/calm-currents-lofi-relax-calm/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 147,
+      "mood": [
+        "calm",
+        "focused"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Relax",
+        "Calm"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "tranquil-mindscape",
+      "title": "Tranquil Mindscape",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/tranquil-mindscape-lofi-happy-reflection/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 153,
+      "mood": [
+        "warm",
+        "calm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Happy",
+        "Reflection"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "tokyo-sunset",
+      "title": "Tokyo Sunset",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/tokyo-sunset-lofi-peaceful-soft/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 138,
+      "mood": [
+        "calm",
+        "warm"
+      ],
+      "energy": 1,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Peaceful",
+        "Soft"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "saturation",
+      "title": "Saturation",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/saturation-lofi-calm-relaxed/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 155,
+      "mood": [
+        "calm",
+        "focused"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Calm",
+        "Relaxed"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "into-the-mist",
+      "title": "Into The Mist",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/into-the-mist-lofi-calm-relaxed/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 129,
+      "mood": [
+        "calm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Calm",
+        "Relaxed"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "theta-frequency",
+      "title": "Theta Frequency",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/theta-frequency-lofi-chill-calm/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 126,
+      "mood": [
+        "focused",
+        "calm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Chill",
+        "Calm"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "wetlands",
+      "title": "Wetlands",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/wetlands-lofi-calm-relaxed/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 163,
+      "mood": [
+        "calm",
+        "warm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Calm",
+        "Relaxed"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "bubbles",
+      "title": "Bubbles",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/bubbles-lofi-bright-relaxed/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 147,
+      "mood": [
+        "bright",
+        "warm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Bright",
+        "Relaxed"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "doodles",
+      "title": "Doodles",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/doodles-lofi-happy-mp3/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 138,
+      "mood": [
+        "bright",
+        "playful"
+      ],
+      "energy": 3,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "LoFi",
+        "Happy"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "projector-screen",
+      "title": "Projector Screen",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/projector-screen-lofi-happy-mp3/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 142,
+      "mood": [
+        "bright",
+        "warm"
+      ],
+      "energy": 3,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "LoFi",
+        "Happy"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "walking-away",
+      "title": "Walking Away",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/walking-away-lofi-peaceful-motivating/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 156,
+      "mood": [
+        "inspiring",
+        "calm"
+      ],
+      "energy": 3,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Peaceful",
+        "Motivating"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "shimmer",
+      "title": "Shimmer",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/shimmer-lofi-chill/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 180,
+      "mood": [
+        "bright",
+        "calm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "LoFi",
+        "Chill"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "wave-maker",
+      "title": "Wave Maker",
+      "artist": "HoliznaCC0",
+      "album": "Public Domain Lofi",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/wave-maker-lofi-dreamy-retro/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 185,
+      "mood": [
+        "futuristic",
+        "calm"
+      ],
+      "energy": 2,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
+      "artistTags": [
+        "Lofi",
+        "Dreamy",
+        "Retro"
+      ],
+      "tagSource": "artist-title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "machines-with-feelings",
+      "title": "Machines With Feelings",
+      "artist": "HoliznaCC0",
+      "album": "Waves Of Nostalgia 2",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/machines-with-feelings/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 197,
+      "mood": [
+        "futuristic",
+        "focused"
+      ],
+      "energy": 3,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "street-lights-passing-by",
+      "title": "Street Lights Passing By",
+      "artist": "HoliznaCC0",
+      "album": "Waves Of Nostalgia 2",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/street-lights-passing-by/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 215,
+      "mood": [
+        "futuristic",
+        "focused"
+      ],
+      "energy": 3,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "night-life",
+      "title": "Night Life",
+      "artist": "HoliznaCC0",
+      "album": "Waves Of Nostalgia 2",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/night-life/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 223,
+      "mood": [
+        "futuristic",
+        "confident"
+      ],
+      "energy": 4,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "dear-mr-super-computer",
+      "title": "Dear Mr Super Computer",
+      "artist": "HoliznaCC0",
+      "album": "Power Pop!",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/dear-mr-super-computer/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "track",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/dear-mr-super-computer/",
+        "note": "트랙 페이지에 CC0 1.0 Universal 표기, Instrumental: Yes, AI generated: No 확인"
+      },
+      "durationSec": 140,
+      "mood": [
+        "playful",
+        "futuristic"
+      ],
+      "energy": 4,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": false,
+      "instrumentalEvidence": "track-page(Instrumental: Yes)",
+      "artistTags": [],
+      "tagSource": "album-description(80s power pop)+title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "retro-synths",
+      "title": "Retro Synths",
+      "artist": "HoliznaCC0",
+      "album": "Power Pop!",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/retro-synths/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 222,
+      "mood": [
+        "futuristic",
+        "bright"
+      ],
+      "energy": 4,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(80s power pop)+title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "happy-dance",
+      "title": "Happy Dance",
+      "artist": "HoliznaCC0",
+      "album": "Power Pop!",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/happy-dance-2/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 155,
+      "mood": [
+        "playful",
+        "bright"
+      ],
+      "energy": 4,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(80s power pop)+title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    },
+    {
+      "id": "funky-pop",
+      "title": "Funky Pop",
+      "artist": "HoliznaCC0",
+      "album": "Power Pop!",
+      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/funky-pop/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "requiresAttribution": false,
+      "licenseEvidence": {
+        "level": "album",
+        "checkedAt": "2026-09-17",
+        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
+        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+      },
+      "durationSec": 142,
+      "mood": [
+        "playful",
+        "confident"
+      ],
+      "energy": 4,
+      "density": null,
+      "bpm": null,
+      "loopable": null,
+      "vocals": null,
+      "instrumentalEvidence": "album-genre-tag(Instrumental)",
+      "artistTags": [],
+      "tagSource": "album-description(80s power pop)+title",
+      "verified": false,
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "file": null,
+      "sha256": null,
+      "loudnessLufs": null
+    }
+  ]
+}

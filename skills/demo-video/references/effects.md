@@ -1,0 +1,72 @@
+# Effects
+
+All effects are screencast overlays - HTML rendered above the page. Nothing here depends on ffmpeg text filters (this build has none).
+
+Every helper below is already in scope in a scene body, takes no `page` argument, and is defined in `scripts/prelude.js`. Nothing is imported.
+
+**A helper that takes a duration blocks for it.** Do not add your own wait afterwards - see `screencast-api.md`.
+
+## Intro / outro
+
+`intro({ title, subtitle?, brand?, durationMs? })` and `outro({ ... })` - blocks for `durationMs` (default 2500 / 3000).
+
+A full-viewport opaque card on a dark gradient: title scales up from 0.94 with a fade, subtitle follows 200ms later, outro reverses the motion. Both call `hideActions()` first so no action callout lands on the card.
+
+Do not navigate in an intro or outro body - `dv.py render` already blanks the page before recording.
+
+Do not use `chapter()` for the intro. Chapter cards blur the page behind them, which reads as a rendering fault on a blank page.
+
+## Chapter break
+
+`chapter(title, { description?, durationMs? })` - blocks for `durationMs` + ~300ms.
+
+Card over a blurred snapshot of the live page. Use it between sections mid-video, where the blurred page is the point.
+
+## Click ripple
+
+`clickRipple(locator, { color?, sizePx?, settleMs? })`
+
+Shows a ring expanding from the element's center (scale .2 → 2.6, opacity .9 → 0 over 600ms) **while** clicking, waits `settleMs` (default 600) so the result registers, then removes the ring. Use it instead of `locator.click()` everywhere in a demo - a bare click is invisible on video.
+
+`ripple(x, y, opts)` for a bare coordinate (canvas, map) - blocks for the animation.
+
+The ring is an overlay, so it never intercepts the click.
+
+Throws if the target has no bounding box. That is the correct behaviour: it means the element is hidden or detached and the demo would have recorded a click on nothing.
+
+## Subtitles
+
+`subtitle(text, { holdMs?, position? })` returns a disposable.
+
+- No `holdMs`: **sticky and non-blocking**. Hold it across several actions, then `.dispose()`.
+- With `holdMs`: **blocks** for that long, then self-removes. `readingMs(text)` gives the right value.
+- Bottom-center by default (`bottom`, `top`, `bottom-left`, `bottom-right`), `pointer-events: none`, above all page content.
+- Font stack: `Apple SD Gothic Neo`, `Pretendard`, `Noto Sans KR`, then the system sans-serif. Whichever the machine has first is used; check Korean rendering in the first clip's frame tile.
+
+`subtitles([{ text, holdMs? }, ...])` plays several in order with a 300ms gap and returns when the last clears.
+
+Subtitles do not survive navigation. Re-show after `goto`.
+
+## Element highlight
+
+`highlight(locator, { label?, durationMs? })` - blocks for `durationMs` (default 2000).
+
+Outlines the element and optionally puts a labelled callout under it. For "this is the field that matters". Do not stack it with a subtitle in the same instant - the viewer reads one thing at a time.
+
+## Dwell and density
+
+`dwell(ms)` holds the current view. `density()` returns `{ textChars, interactive, dwellMs }` for the current page - use it to set a scene's dwell time from what is actually on screen rather than guessing.
+
+## Cursor and action callouts
+
+```js
+await showActions();   // cursor:'pointer', duration:900, fontSize:20, position:'top-right'
+```
+
+Gives an animated pointer travelling between action points plus a callout per action. The callout text is Playwright's own and is **English and not customizable** (`Click`, `Type "..."`, `Press "Enter"`).
+
+For a Korean-only video: `await hideActions()` and carry the explanation in subtitles, keeping the ripple for click feedback. State which choice you made when reporting.
+
+## Scene transitions
+
+Transitions happen at compose time, not record time - see `compose.md`. Do not try to fake a transition inside a clip with a fading overlay; it will not line up with the cut.
