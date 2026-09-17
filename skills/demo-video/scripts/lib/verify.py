@@ -157,12 +157,22 @@ def main(argv=None):
         timing = scenes_dir / f"{sc['id']}.timing.json"
         if not timing.exists():
             continue
-        marks = common.load_json(timing).get("marks") or []
+        t = common.load_json(timing)
+        marks, cues = t.get("marks") or [], t.get("cues") or []
         zin = [m for m in marks if m["type"] == "zoomIn"]
         zout = [m for m in marks if m["type"] == "zoomOut"]
         if not zin:
             continue
-        at = sc["startSec"] + ((zout[0]["atMs"] - 150) if zout else (zin[0]["atMs"] + theme["zoom"]["inMs"] + 200)) / 1000
+        # Sample inside the zoomed span while a subtitle is on screen (not in the 300ms swap gap).
+        span0 = zin[0]["atMs"] + theme["zoom"]["inMs"] + 100
+        span1 = (zout[0]["atMs"] - 100) if zout else span0 + 1000
+        best = None
+        for c in cues:
+            lo, hi = max(span0, c["startMs"] + 150), min(span1, (c.get("endMs") or c["startMs"]) - 150)
+            if hi > lo and (best is None or hi - lo > best[1] - best[0]):
+                best = (lo, hi)
+        local_ms = (best[0] + best[1]) / 2 if best else max(span0, span1 - 50)
+        at = sc["startSec"] + local_ms / 1000
         f = gray_frame(mp4, at, w, h)
         box = subtitle_bbox(f, w, h, theme) if f else None
         if not box:
