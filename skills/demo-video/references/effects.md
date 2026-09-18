@@ -25,7 +25,7 @@ Card over a blurred snapshot of the live page. Use it between sections mid-video
 ## Layers
 
 - L3 (subtitles, chapter cards, key caps) are screencast overlays in the browser top layer: they never move or scale when the page zooms or scrolls.
-- L2 (cursor, ripple, highlight) are overlays drawn at the target's live `boundingBox()`, so they land on the zoomed element.
+- L2 (cursor, ripple, highlight) are overlays drawn at the target's live `boundingBox()`, so they land on the zoomed element. Inside the overlay container the subtitle sits above them (z-index 30 vs 20/15/10): a highlight's dim never darkens the subtitle.
 - L1 (the app) is zoomed with a transform on `<body>` around the target's visible center.
 
 ## Cursor and click

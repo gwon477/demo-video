@@ -2,7 +2,8 @@
 // helper takes it as an argument. The run-code sandbox is a bare vm: no
 // require, no process, no module. Everything a scene needs lives here.
 //
-// Layers (DESIGN.md 6절):
+// Layers (DESIGN.md 6절). Inside the overlay container the z-order is: subtitle/keycap 30,
+// cursor 20, ripple 15, highlight 10 - a highlight's dim must never darken the subtitle.
 //   L3 subtitles, chapter cards, key caps  -> page.screencast overlays. They sit in
 //      the browser top layer and never move or scale when the page zooms or scrolls.
 //   L2 cursor, ripple, highlight           -> overlays drawn at the target's live
@@ -71,7 +72,7 @@ function subtitleHtml(text, emphasis) {
   // validate rejects text that would not fit, so overflow here means a rule was bypassed.
   return `
     <style>@keyframes subIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1}}</style>
-    <div style="position:absolute;left:50%;bottom:${Math.round(FRAME.height * T.subtitle.bottomRatio)}px;
+    <div style="position:absolute;z-index:30;left:50%;bottom:${Math.round(FRAME.height * T.subtitle.bottomRatio)}px;
       transform:translateX(-50%);max-width:${Math.round(T.subtitle.maxWidthRatio * 100)}%;padding:${Math.round(SUB_FONT_PX * 0.35)}px ${Math.round(SUB_FONT_PX * 0.7)}px;
       background:${T.subtitle.background};border-radius:${T.subtitle.radius}px;box-shadow:${T.subtitle.shadow ?? 'none'};
       border:${T.subtitle.border ?? 'none'};border-left:${T.subtitle.borderLeft && T.subtitle.borderLeft !== 'none' ? T.subtitle.borderLeft : (T.subtitle.border ?? 'none')};
@@ -82,9 +83,25 @@ function subtitleHtml(text, emphasis) {
 
 // No holdMs -> sticky, caller disposes. With holdMs -> self-removes and blocks.
 // Every subtitle records a cue on __cues so render can emit exact timings.
+// Predicted box geometry from the same font the overlay uses, so verify can check
+// the recorded frames against where the subtitle must be, whatever the theme colors.
+async function subtitleBox(text) {
+  const font = `${T.subtitle.fontWeight ?? 600} ${SUB_FONT_PX}px ${FONT}`;
+  const textW = await page.evaluate(({ text, font }) => {
+    const c = document.createElement('canvas').getContext('2d');
+    c.font = font;
+    return c.measureText(text).width;
+  }, { text: String(text), font }).catch(() => String(text).length * SUB_FONT_PX * 0.9);
+  const padX = Math.round(SUB_FONT_PX * 0.7), padY = Math.round(SUB_FONT_PX * 0.35);
+  const w = Math.min(Math.round(textW + padX * 2), Math.round(FRAME.width * T.subtitle.maxWidthRatio));
+  const h = Math.round(SUB_FONT_PX * 1.25 + padY * 2);
+  const y1 = FRAME.height - Math.round(FRAME.height * T.subtitle.bottomRatio);
+  return { x0: Math.round(FRAME.width / 2 - w / 2), y0: y1 - h, x1: Math.round(FRAME.width / 2 + w / 2), y1 };
+}
+
 async function subtitle(text, opts = {}) {
   const html = subtitleHtml(text, opts.emphasis);
-  const cue = { text, startMs: Date.now() - __t0, endMs: null };
+  const cue = { text, startMs: Date.now() - __t0, endMs: null, box: await subtitleBox(text) };
   __cues.push(cue);
   if (opts.holdMs) {
     await overlay(html, opts.holdMs);
@@ -125,7 +142,7 @@ function keycapHtml(keys) {
   const caps = keys.map((k) => `<span style="display:inline-block;min-width:${SUB_FONT_PX * 1.2}px;padding:6px 12px;margin-right:8px;
     border:2px solid rgba(255,255,255,.7);border-bottom-width:4px;border-radius:8px;background:rgba(12,14,18,.75);
     color:#fff;font-family:${FONT};font-size:${Math.round(SUB_FONT_PX * 0.8)}px;font-weight:700;text-align:center">${k}</span>`).join('');
-  return `<div style="position:absolute;left:${Math.round(FRAME.width * 0.06)}px;bottom:${Math.round(FRAME.height * 0.07)}px;">${caps}</div>`;
+  return `<div style="position:absolute;z-index:30;left:${Math.round(FRAME.width * 0.06)}px;bottom:${Math.round(FRAME.height * 0.07)}px;">${caps}</div>`;
 }
 const KEY_LABELS = { Meta: '⌘', Control: 'Ctrl', Alt: '⌥', Shift: '⇧', Enter: '⏎', Escape: 'Esc', ArrowDown: '↓', ArrowUp: '↑', ArrowLeft: '←', ArrowRight: '→', Backspace: '⌫' };
 async function key(combo, opts = {}) {
@@ -149,7 +166,7 @@ function cursorSvg(pressed) {
 function cursorHtml(from, to, ms, pressed) {
   const anim = ms > 0 ? `<style>@keyframes cmove{from{transform:translate(${from.x}px,${from.y}px)}to{transform:translate(${to.x}px,${to.y}px)}}</style>` : '';
   const style = ms > 0 ? `animation:cmove ${ms}ms ease-in-out forwards;` : `transform:translate(${to.x}px,${to.y}px);`;
-  return `${anim}<div style="position:absolute;left:0;top:0;${style}filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));">${cursorSvg(pressed)}</div>`;
+  return `${anim}<div style="position:absolute;z-index:20;left:0;top:0;${style}filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));">${cursorSvg(pressed)}</div>`;
 }
 // Move the visible cursor (and the real mouse, so hover states fire) over 300-500ms.
 // FR-030: the cursor never teleports.
@@ -182,7 +199,7 @@ function rippleHtml(x, y, opts = {}) {
   const r = size / 2;
   return `
     <style>@keyframes rp{0%{transform:scale(.2);opacity:.9}100%{transform:scale(2.6);opacity:0}}</style>
-    <div style="position:absolute;left:${x - r}px;top:${y - r}px;width:${size}px;height:${size}px;border-radius:50%;
+    <div style="position:absolute;z-index:15;left:${x - r}px;top:${y - r}px;width:${size}px;height:${size}px;border-radius:50%;
       background:radial-gradient(circle,rgba(${color},.55),rgba(${color},0) 70%);border:2px solid rgba(${color},.9);
       animation:rp ${ms}ms ease-out forwards;"></div>`;
 }
@@ -252,12 +269,12 @@ async function highlight(target, opts = {}) {
   if (H.corners) {
     // Four corner brackets instead of a full border; the dim (if any) still surrounds the box.
     const L = Math.max(14, Math.round(Math.min(w, h) * 0.18)), bw = H.borderPx, c = H.color;
-    const corner = (l, t, bt, br) => `<div style="position:absolute;left:${l}px;top:${t}px;width:${L}px;height:${L}px;
+    const corner = (l, t, bt, br) => `<div style="position:absolute;z-index:11;left:${l}px;top:${t}px;width:${L}px;height:${L}px;
       border-top:${bt ? bw : 0}px solid ${c};border-bottom:${bt ? 0 : bw}px solid ${c};border-left:${br ? 0 : bw}px solid ${c};border-right:${br ? bw : 0}px solid ${c};"></div>`;
-    box = `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;box-shadow:0 0 0 9999px ${dim}${glow};"></div>`
+    box = `<div style="position:absolute;z-index:10;left:${x}px;top:${y}px;width:${w}px;height:${h}px;box-shadow:0 0 0 9999px ${dim}${glow};"></div>`
       + corner(x, y, true, false) + corner(x + w - L, y, true, true) + corner(x, y + h - L, false, false) + corner(x + w - L, y + h - L, false, true);
   } else {
-    box = `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;
+    box = `<div style="position:absolute;z-index:10;left:${x}px;top:${y}px;width:${w}px;height:${h}px;
       border-radius:${H.radius ?? 8}px;border:${H.borderPx}px ${H.style ?? 'solid'} ${H.color};
       box-shadow:0 0 0 9999px ${dim}${glow};"></div>`;
   }

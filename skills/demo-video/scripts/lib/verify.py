@@ -71,6 +71,37 @@ def subtitle_bbox(frame: bytes, w: int, h: int, theme):
     return (x0, rows[0], x1, rows[-1])
 
 
+def css_luma(color: str, page_luma=240.0):
+    """Approximate luminance of a CSS color, alpha-blended over a light page. None for transparent/unknown."""
+    c = (color or "").strip().lower()
+    m = re.fullmatch(r"#([0-9a-f]{6})", c)
+    if m:
+        r, g, b = (int(m.group(1)[i:i + 2], 16) for i in (0, 2, 4))
+        return 0.299 * r + 0.587 * g + 0.114 * b
+    m = re.fullmatch(r"rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)", c)
+    if m:
+        r, g, b = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        a = float(m.group(4)) if m.group(4) else 1.0
+        return a * (0.299 * r + 0.587 * g + 0.114 * b) + (1 - a) * page_luma
+    return None
+
+
+def box_profile(frame: bytes, w: int, box, bg_luma, ink_luma):
+    """Fractions of pixels inside the predicted subtitle box that look like its background and its text."""
+    x0, y0, x1, y1 = max(0, box["x0"]), max(0, box["y0"]), min(w, box["x1"]), box["y1"]
+    n = bg = ink = 0
+    for y in range(y0 + 2, y1 - 2, 2):
+        row = frame[y * w:(y + 1) * w]
+        for x in range(x0 + 2, x1 - 2, 2):
+            v = row[x]
+            n += 1
+            if bg_luma is not None and abs(v - bg_luma) < 45:
+                bg += 1
+            if abs(v - ink_luma) < 60:
+                ink += 1
+    return (bg / n if n else 0.0, ink / n if n else 0.0)
+
+
 def loudness(mp4: Path):
     r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(mp4), "-map", "0:a:0",
                         "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True)
@@ -151,7 +182,11 @@ def main(argv=None):
         subprocess.run(["ffmpeg", "-y", "-v", "error"] + inputs + ["-filter_complex", fc, "-map", "[t]", str(tile)],
                        capture_output=True)
 
-    # subtitles under zoom (title-safe 88% -> 6% margins)
+    # subtitles under zoom: the box the prelude predicted must hold the subtitle's colors on a zoomed
+    # frame just as it does on an unzoomed frame of the same cue (SC-004, theme-independent)
+    st = theme["subtitle"]
+    bg_luma, ink_luma = css_luma(st.get("background", "")), css_luma(st.get("color", "#fff"))
+    ink_luma = 255.0 if ink_luma is None else ink_luma
     margin_x, margin_y = w * (1 - theme["safeArea"]["title"]) / 2, h * (1 - theme["safeArea"]["title"]) / 2
     for sc in manifest["scenes"]:
         timing = scenes_dir / f"{sc['id']}.timing.json"
@@ -163,29 +198,44 @@ def main(argv=None):
         zout = [m for m in marks if m["type"] == "zoomOut"]
         if not zin:
             continue
-        # Sample inside the zoomed span while a subtitle is on screen (not in the 300ms swap gap).
         span0 = zin[0]["atMs"] + theme["zoom"]["inMs"] + 100
         span1 = (zout[0]["atMs"] - 100) if zout else span0 + 1000
-        best = None
+        best, cue = None, None
         for c in cues:
             lo, hi = max(span0, c["startMs"] + 150), min(span1, (c.get("endMs") or c["startMs"]) - 150)
             if hi > lo and (best is None or hi - lo > best[1] - best[0]):
-                best = (lo, hi)
-        local_ms = (best[0] + best[1]) / 2 if best else max(span0, span1 - 50)
-        at = sc["startSec"] + local_ms / 1000
-        f = gray_frame(mp4, at, w, h)
-        box = subtitle_bbox(f, w, h, theme) if f else None
-        if not box:
-            failures.append(f"{sc['id']}: no subtitle box visible on the zoomed frame at {at:.2f}s")
+                best, cue = (lo, hi), c
+        if span1 - span0 < 400:
+            failures.append(f"{sc['id']}: zoomed span is only {(zout[0]['atMs'] - zin[0]['atMs']) / 1000:.1f}s - "
+                            f"put a highlight or hold between zoom and zoomOut, or drop the zoom")
             continue
-        x0, y0, x1, y1 = box
-        checks.append({"check": "subtitle", "scene": sc["id"], "at": round(at, 2), "box": box})
-        if x0 < margin_x or x1 > w - margin_x or y1 > h - margin_y:
-            failures.append(f"{sc['id']}: subtitle box {box} leaves the title-safe area on the zoomed frame")
-        if y0 < h * 0.6:
-            failures.append(f"{sc['id']}: subtitle box {box} is not in the bottom band on the zoomed frame")
-        if abs((x0 + x1) / 2 - w / 2) > w * 0.02:
-            failures.append(f"{sc['id']}: subtitle box {box} is off center on the zoomed frame")
+        if not cue or not cue.get("box"):
+            failures.append(f"{sc['id']}: no subtitle cue overlaps the zoomed span (or the cue has no box - re-render)")
+            continue
+        box = cue["box"]
+        zoomed_at = sc["startSec"] + ((best[0] + best[1]) / 2) / 1000
+        # unzoomed reference: the same cue before the zoom started, else right after zoomOut
+        ref_local = (cue["startMs"] + 150) if cue["startMs"] + 200 < zin[0]["atMs"] else \
+            ((zout[0]["atMs"] + zout[0].get("ms", 500) + 150) if zout and (cue.get("endMs") or 0) > zout[0]["atMs"] + 800 else None)
+        fz = gray_frame(mp4, zoomed_at, w, h)
+        if fz is None:
+            failures.append(f"{sc['id']}: no frame at {zoomed_at:.2f}s")
+            continue
+        bg_z, ink_z = box_profile(fz, w, box, bg_luma, ink_luma)
+        checks.append({"check": "subtitle", "scene": sc["id"], "at": round(zoomed_at, 2), "box": [box["x0"], box["y0"], box["x1"], box["y1"]],
+                       "bg": round(bg_z, 2), "ink": round(ink_z, 2)})
+        if box["x0"] < margin_x or box["x1"] > w - margin_x or box["y1"] > h - margin_y:
+            failures.append(f"{sc['id']}: subtitle box {box} leaves the title-safe area")
+        if ink_z < 0.02 or (bg_luma is not None and bg_z < 0.3):
+            failures.append(f"{sc['id']}: subtitle not found in its box on the zoomed frame at {zoomed_at:.2f}s "
+                            f"(bg {bg_z:.2f}, ink {ink_z:.2f}) - it moved or scaled with the page")
+        if ref_local is not None:
+            fr = gray_frame(mp4, sc["startSec"] + ref_local / 1000, w, h)
+            if fr is not None:
+                bg_r, ink_r = box_profile(fr, w, box, bg_luma, ink_luma)
+                if abs(bg_r - bg_z) > 0.25 or abs(ink_r - ink_z) > 0.15:
+                    failures.append(f"{sc['id']}: subtitle box composition differs between unzoomed (bg {bg_r:.2f}/ink {ink_r:.2f}) "
+                                    f"and zoomed (bg {bg_z:.2f}/ink {ink_z:.2f}) frames")
 
     # audio
     audio = has_audio(mp4)
