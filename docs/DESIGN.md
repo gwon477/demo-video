@@ -334,7 +334,7 @@ flowchart TD
 | FR-071 | 번들 트랙은 CC0만 기본으로 넣는다. CC BY 트랙은 `requiresAttribution: true`로 구분하고, 선택되면 `compose`가 `output/CREDITS.txt`에 표기 문구를 쓰고 에이전트가 사용자에게 "영상 설명이나 아웃트로에 표기 필요"를 알린다 |
 | FR-072 | `catalog.json`의 트랙마다 출처 URL, 라이선스, 라이선스 확인 날짜, 파일 sha256을 기록한다. 원 사이트가 사라져도 근거가 남게 하기 위해서다 |
 | FR-073 | 감성 태그는 통제 어휘만 쓴다. mood: `calm`, `focused`, `warm`, `bright`, `confident`, `inspiring`, `playful`, `futuristic`, `serious`. 여기에 `energy` 1~5, `bpm`, `density`(sparse, medium, busy), `loopable`, `vocals: false`를 둔다 |
-| FR-074 | 태그는 출처 메타데이터로 1차 입력하고, 사람이 실제로 듣고 확정한 트랙만 `verified: true`가 된다. 자동 선택은 `verified` 트랙만 대상으로 한다 |
+| FR-074 | 트랙 등급은 둘이다. `listened`: 사람이 전곡을 듣고 태그를 확정. `popularity`: 대중적 사용이 문서로 확인된 출처(Incompetech, Kevin MacLeod: 유튜브 수백만 영상·TikTok 1,518억 회)의 작곡가 태그를 그대로 씀. 자동 선택은 두 등급 모두 대상이며 `config.bgm.trust: "listened"`로 좁힐 수 있다. 등급이 없는 트랙은 선택하지 않는다 (2026-09-18 개정) |
 | FR-075 | 2단계에서 에이전트가 `scenario.md`로부터 컨셉 프로필(시청자, 톤, 도메인, 장면 전환 속도, 나레이션 유무)을 만들고, `dv.py bgm pick`이 점수를 매겨 상위 3곡과 이유를 돌려준다. 점수 계산은 코드가 하므로 어느 모델을 쓰든 같은 곡이 나온다 |
 | FR-076 | 나레이션이 있으면 `energy` 3 이하, `density`가 `busy`가 아닌 곡만 후보다. 목소리와 멜로디가 경쟁하지 않게 하기 위해서다 |
 | FR-077 | 선택 결과는 G2 콘티 승인 때 1순위와 대안 2곡으로 함께 보여준다. 교체는 `compose`만 다시 돌린다 |
@@ -364,7 +364,7 @@ flowchart TD
 
 조사에서 확인한 한계가 하나 있다. 밝고 고양되는 전형적 "기업 홍보" 사운드는 CC0로는 드물고 대부분 CC BY다. CC0 묶음은 로파이, 앰비언트, 일렉트로닉 쪽으로 기운다. `inspiring` 계열을 채우려면 CC BY 트랙을 표기 조건으로 받아들이거나 회사 계약 음원을 쓴다.
 
-**배포 방식.** 20곡을 128kbps로 다시 인코딩해도 60MB 안팎이라 git 저장소에 직접 넣지 않는다. `catalog.json`만 저장소에 두고, 음원 묶음은 GitHub Release 자산으로 올려 `dv.py bgm fetch`가 첫 사용 때 받아 sha256을 검증한다.
+**배포 방식.** 음원은 저장소에 넣지 않는다. `catalog.json`(`assets/bgm/build-catalog.py`로 Incompetech 공개 인덱스에서 결정적으로 생성, 26곡, sha256·라우드니스 포함)만 두고, `dv.py bgm use`가 첫 사용 때 원 출처에서 받아 sha256을 검증해 `~/.cache/demo-video/bgm/`에 둔다. 출처가 사라지면 Release 자산으로 옮긴다.
 
 ## 7. CLI 스크립트 명세
 
@@ -489,8 +489,8 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 - [ ] 기본 인트로/아웃트로 HTML 템플릿과 `theme.json`
 - [ ] 사용자 영상 정규화와 레터박스 처리
 - [ ] `compose`의 `xfade` 전환, 페이드인/아웃, 단일 인코딩
-- [ ] BGM 1차 (이번 작업 범위 밖): 후보 20곡 선정, 직접 청취해 보컬 유무와 감성 태그 확정, `catalog.json`과 `LICENSES.md` 작성, Release 자산 업로드
-- [ ] BGM 2차: `bgm probe`와 사용자 제공 파일 경로, `compose`의 루프·페이드·음량 정규화·더킹, `CREDITS.txt` 생성. `fetch / pick`은 1차 이후로 미룬다
+- [x] BGM 1차 (2026-09-18, popularity 등급): `build-catalog.py`가 Incompetech 인덱스에서 mood별 3곡씩 26곡을 선정·측정, `catalog.json`·`LICENSES.md`. 청취 확정(`listened`)은 사람이 나중에 올린다
+- [x] BGM 2차: `bgm probe / pick / use / fetch / list`, `compose`의 루프·페이드·더킹·정규화, CC BY 선택 시 `CREDITS.txt`
 - [ ] 장면 해시 캐시, 드래프트 모드, 인증 상태 재사용, `--jobs`와 `mutates` 처리
 - [ ] `verify` 프레임 타일과 볼륨 측정, 나레이션 구간에서 음성이 BGM보다 충분히 큰지 확인
 - 완료 기준: SC-002와 SC-003을 샘플 앱에서 측정해 통과한다.

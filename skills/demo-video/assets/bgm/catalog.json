@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
-  "status": "draft — 모든 트랙 verified:false. 자동 선택(bgm pick)은 verified:true 트랙만 대상으로 한다.",
-  "generatedAt": "2026-09-17",
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-18",
+  "builder": "assets/bgm/build-catalog.py",
   "vocabulary": {
     "mood": [
       "calm",
@@ -19,840 +19,1038 @@
       "sparse",
       "medium",
       "busy"
+    ],
+    "verified": [
+      "listened",
+      "popularity",
+      false
     ]
   },
-  "taggingNotes": [
-    "mood와 energy는 청취가 아니라 작곡가가 제목에 붙인 분위기 표기, 앨범 설명, 장르 태그로 추정한 1차 값이다.",
-    "density, bpm, loopable, vocals는 추정하지 않고 비워 두었다. 청취와 측정으로 채운다.",
-    "verified를 true로 바꾸기 전 확인: 보컬·음성 샘플 없음, mood/energy 타당, 나레이션 밑에 깔아도 방해되지 않는지(density), 시작부 무음 길이, 루프 이음새."
-  ],
-  "verificationChecklist": [
-    "트랙 페이지에서 CC0 표기와 Instrumental: Yes 확인 → licenseEvidence.level을 track으로",
-    "파일을 받아 sha256, durationSec, loudnessLufs 기록 (dv.py bgm probe)",
-    "전곡 청취: 보컬/음성 샘플 유무 → vocals",
-    "mood 1~2개, energy, density 확정",
-    "verified, verifiedBy, verifiedAt 기록"
-  ],
-  "gaps": [
+  "policy": {
+    "tiers": "listened: 사람이 전곡 청취해 태그를 확정. popularity: 대중적으로 검증된 출처의 작곡가 태그를 그대로 씀. bgm pick은 두 등급을 모두 대상으로 하되 config.bgm.trust로 좁힐 수 있다",
+    "attribution": "CC BY 트랙이 선택되면 compose가 output/CREDITS.txt에 attribution 문구를 쓴다"
+  },
+  "sources": [
     {
-      "mood": "confident",
-      "note": "임원 대상·신뢰 강조용 후보가 2곡뿐이고 둘 다 energy 4다. energy 2~3의 차분하고 단단한 곡이 필요하다."
-    },
-    {
-      "mood": "serious",
-      "note": "후보 없음. 규제·보안·품질 도메인용."
-    },
-    {
-      "mood": "inspiring",
-      "note": "후보 1곡. 전형적 기업 홍보 사운드는 CC0에 드물다. CC BY 4.0 허용 여부를 정해야 채울 수 있다."
-    },
-    {
-      "risk": "single-artist",
-      "note": "20곡 모두 한 작곡가다. 음색이 비슷해질 수 있고 출처 의존도가 높다. 아래 sourcesToReview에서 보강한다."
-    }
-  ],
-  "sourcesToReview": [
-    {
-      "name": "Maarten Schellekens — PUBLIC DOMAIN (FMA)",
-      "url": "https://freemusicarchive.org/music/maarten-schellekens/public-domain-1",
-      "license": "CC0",
-      "for": [
-        "warm",
-        "serious",
-        "confident"
-      ],
-      "note": "어쿠스틱·재즈·앰비언트. 보컬 곡이 섞여 있어 선별 필요"
-    },
-    {
-      "name": "OpenGameArt — CC0 Upbeat / Electronic 모음",
-      "url": "https://opengameart.org/content/cc0-upbeat-electronic-music",
-      "license": "CC0(모음 기준, 곡별 확인 필요)",
-      "for": [
-        "futuristic",
-        "focused"
-      ],
-      "note": "게임 음악 색이 강함. 곡 페이지에서 라이선스 개별 확인"
-    },
-    {
-      "name": "HoliznaCC0 — Only In The Milky Way Part 1/2",
-      "url": "https://freemusicarchive.org/music/holiznacc0/only-in-the-milky-way-part-1",
-      "license": "CC0",
-      "for": [
-        "futuristic",
-        "serious"
-      ],
-      "note": "로파이와 빈티지 SF 사운드트랙 풍의 연주 앨범"
-    },
-    {
-      "name": "free-stock-music.com — Corporate",
-      "url": "https://www.free-stock-music.com/corporate.html",
-      "license": "대부분 CC BY 4.0",
-      "for": [
-        "inspiring",
-        "confident",
-        "bright"
-      ],
-      "note": "표기 조건부. requiresAttribution:true로만 추가"
-    }
-  ],
-  "excludedSources": [
-    {
-      "name": "Pixabay Music",
-      "reason": "Content License가 음원의 단독 배포를 금지. 번들 불가, 사용자 개별 파일로는 사용 가능"
-    },
-    {
-      "name": "FreePD.com 및 미러",
-      "reason": "원 사이트 폐쇄. 미러는 출처 검증 불가"
+      "name": "Incompetech (Kevin MacLeod)",
+      "url": "https://incompetech.com/music/royalty-free/",
+      "license": "CC BY 4.0",
+      "index": "https://incompetech.com/music/royalty-free/pieces.json",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published."
     }
   ],
   "tracks": [
     {
-      "id": "calm-currents",
-      "title": "Calm Currents",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/calm-currents-lofi-relax-calm/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
+      "id": "inc-almost-new",
+      "title": "Almost New",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1800008",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Almost%20New.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
       },
-      "durationSec": 147,
-      "mood": [
-        "calm",
-        "focused"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Relax",
-        "Calm"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "tranquil-mindscape",
-      "title": "Tranquil Mindscape",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/tranquil-mindscape-lofi-happy-reflection/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 153,
-      "mood": [
-        "warm",
-        "calm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Happy",
-        "Reflection"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "tokyo-sunset",
-      "title": "Tokyo Sunset",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/tokyo-sunset-lofi-peaceful-soft/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 138,
-      "mood": [
-        "calm",
-        "warm"
-      ],
-      "energy": 1,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Peaceful",
-        "Soft"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "saturation",
-      "title": "Saturation",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/saturation-lofi-calm-relaxed/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 155,
-      "mood": [
-        "calm",
-        "focused"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Calm",
-        "Relaxed"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "into-the-mist",
-      "title": "Into The Mist",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/into-the-mist-lofi-calm-relaxed/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 129,
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Almost New\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
       "mood": [
         "calm"
       ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Calm",
-        "Relaxed"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "theta-frequency",
-      "title": "Theta Frequency",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/theta-frequency-lofi-chill-calm/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 126,
-      "mood": [
-        "focused",
-        "calm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Chill",
-        "Calm"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "wetlands",
-      "title": "Wetlands",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/wetlands-lofi-calm-relaxed/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 163,
-      "mood": [
-        "calm",
-        "warm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Calm",
-        "Relaxed"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "bubbles",
-      "title": "Bubbles",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/bubbles-lofi-bright-relaxed/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 147,
-      "mood": [
-        "bright",
-        "warm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
+      "feels": [
         "Bright",
-        "Relaxed"
+        "Calming",
+        "Mysterious"
       ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "doodles",
-      "title": "Doodles",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/doodles-lofi-happy-mp3/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 138,
-      "mood": [
-        "bright",
-        "playful"
-      ],
-      "energy": 3,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "LoFi",
-        "Happy"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "projector-screen",
-      "title": "Projector Screen",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/projector-screen-lofi-happy-mp3/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 142,
-      "mood": [
-        "bright",
-        "warm"
-      ],
-      "energy": 3,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "LoFi",
-        "Happy"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "walking-away",
-      "title": "Walking Away",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/walking-away-lofi-peaceful-motivating/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 156,
-      "mood": [
-        "inspiring",
-        "calm"
-      ],
-      "energy": 3,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Peaceful",
-        "Motivating"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "shimmer",
-      "title": "Shimmer",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/shimmer-lofi-chill/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 180,
-      "mood": [
-        "bright",
-        "calm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "LoFi",
-        "Chill"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "wave-maker",
-      "title": "Wave Maker",
-      "artist": "HoliznaCC0",
-      "album": "Public Domain Lofi",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/wave-maker-lofi-dreamy-retro/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/public-domain-lofi/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 185,
-      "mood": [
-        "futuristic",
-        "calm"
-      ],
-      "energy": 2,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental, Lo-fi Instrumental)",
-      "artistTags": [
-        "Lofi",
-        "Dreamy",
-        "Retro"
-      ],
-      "tagSource": "artist-title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "machines-with-feelings",
-      "title": "Machines With Feelings",
-      "artist": "HoliznaCC0",
-      "album": "Waves Of Nostalgia 2",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/machines-with-feelings/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 197,
-      "mood": [
-        "futuristic",
-        "focused"
-      ],
-      "energy": 3,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "street-lights-passing-by",
-      "title": "Street Lights Passing By",
-      "artist": "HoliznaCC0",
-      "album": "Waves Of Nostalgia 2",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/street-lights-passing-by/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 215,
-      "mood": [
-        "futuristic",
-        "focused"
-      ],
-      "energy": 3,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "night-life",
-      "title": "Night Life",
-      "artist": "HoliznaCC0",
-      "album": "Waves Of Nostalgia 2",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/night-life/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/waves-of-nostalgia-2/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
-      },
-      "durationSec": 223,
-      "mood": [
-        "futuristic",
-        "confident"
-      ],
-      "energy": 4,
-      "density": null,
-      "bpm": null,
-      "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(cyberpunk/retrowave/synthwave)",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
-    },
-    {
-      "id": "dear-mr-super-computer",
-      "title": "Dear Mr Super Computer",
-      "artist": "HoliznaCC0",
-      "album": "Power Pop!",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/dear-mr-super-computer/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
-      "licenseEvidence": {
-        "level": "track",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/dear-mr-super-computer/",
-        "note": "트랙 페이지에 CC0 1.0 Universal 표기, Instrumental: Yes, AI generated: No 확인"
-      },
-      "durationSec": 140,
-      "mood": [
-        "playful",
-        "futuristic"
-      ],
-      "energy": 4,
-      "density": null,
-      "bpm": null,
+      "genre": "Soundtrack",
+      "instruments": "Piano, Basses",
+      "energy": 1,
+      "bpm": 80,
+      "density": "sparse",
+      "durationSec": 202.6,
       "loopable": null,
       "vocals": false,
-      "instrumentalEvidence": "track-page(Instrumental: Yes)",
-      "artistTags": [],
-      "tagSource": "album-description(80s power pop)+title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "3cb29102881aa9cb56292753dfa6c92004eddf4e0ad367e979c7292b0e1ac1a0",
+      "loudnessLufs": -23.4,
+      "truePeakDbtp": -9.1,
+      "bytes": 6483966
     },
     {
-      "id": "retro-synths",
-      "title": "Retro Synths",
-      "artist": "HoliznaCC0",
-      "album": "Power Pop!",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/retro-synths/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
+      "id": "inc-infinite-perspective",
+      "title": "Infinite Perspective",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500024",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Infinite%20Perspective.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
       },
-      "durationSec": 222,
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Infinite Perspective\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
       "mood": [
-        "futuristic",
+        "calm"
+      ],
+      "feels": [
+        "Bright",
+        "Calming"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Synths, Voices, Piano, Harp, English Horn, French Horn, Flute",
+      "energy": 1,
+      "bpm": 80,
+      "density": "sparse",
+      "durationSec": 345.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "cccb604db4abe5a3bd33ec46a6436decc36c3895f26ab889112c15a37c5d717b",
+      "loudnessLufs": -16.9,
+      "truePeakDbtp": -3.9,
+      "bytes": 11044756
+    },
+    {
+      "id": "inc-joey-s-formal-waltz-scented",
+      "title": "Joey's Formal Waltz - Scented",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2100013",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Joey%2527s%20Formal%20Waltz.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Joey's Formal Waltz - Scented\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "calm"
+      ],
+      "feels": [
+        "Calm",
+        "Grooving",
+        "Humorous"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Electric Piano, Guitar, Bass, Kit, Farts",
+      "energy": 1,
+      "bpm": 80,
+      "density": "sparse",
+      "durationSec": 300.8,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "2d7f8e6f5edd1b462e4856109c19a18cdfa381eaa46a5faf0240e479aab5e28f",
+      "loudnessLufs": -12.4,
+      "truePeakDbtp": -0.4,
+      "bytes": 6018770
+    },
+    {
+      "id": "inc-dreamer",
+      "title": "Dreamer",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600043",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dreamer.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Dreamer\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "focused"
+      ],
+      "feels": [
+        "Calming",
+        "Relaxed"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Piano, Percussion",
+      "energy": 2,
+      "bpm": 100,
+      "density": "medium",
+      "durationSec": 204.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "615e65c9ca131c11f8e12970644ed74ef822ec4f643b1d9d0085a223600bcdfb",
+      "loudnessLufs": -19.3,
+      "truePeakDbtp": -1.4,
+      "bytes": 6532428
+    },
+    {
+      "id": "inc-eternity",
+      "title": "Eternity",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600031",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Eternity.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Eternity\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "focused"
+      ],
+      "feels": [
+        "Grooving",
+        "Relaxed"
+      ],
+      "genre": "Electronica",
+      "instruments": "Guitar, Bass, Drums, EP, Synths",
+      "energy": 3,
+      "bpm": 100,
+      "density": "medium",
+      "durationSec": 198.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "e9cf0d8fbea2f7f1fc60ecb1c1182cff7506e12f8927001e7b8ebe2e352eacc1",
+      "loudnessLufs": -8.5,
+      "truePeakDbtp": -0.0,
+      "bytes": 6340165
+    },
+    {
+      "id": "inc-fretless",
+      "title": "Fretless",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500074",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Fretless.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Fretless\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "focused"
+      ],
+      "feels": [
+        "Bright",
+        "Relaxed",
+        "Uplifting"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Guitar, Ukulele, Drums, Bass, Glockenspiel, Music Box",
+      "energy": 3,
+      "bpm": 100,
+      "density": "medium",
+      "durationSec": 336.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "e3e640d27169941829ca5b63e3f65412e9c3829d991925be3abae3fc9b6664db",
+      "loudnessLufs": -17.0,
+      "truePeakDbtp": -0.1,
+      "bytes": 10756351
+    },
+    {
+      "id": "inc-samba-isobel",
+      "title": "Samba Isobel",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700071",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Samba%20Isobel.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Samba Isobel\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "warm"
+      ],
+      "feels": [
+        "Bright",
+        "Grooving",
+        "Relaxed"
+      ],
+      "genre": "Jazz",
+      "instruments": "Bass, Drums, Piano",
+      "energy": 2,
+      "bpm": 95,
+      "density": "medium",
+      "durationSec": 250.2,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "563bd5a5686560f56f012d302a672796110cab392a0e3ecbbfdd8f96c6489527",
+      "loudnessLufs": -16.7,
+      "truePeakDbtp": -1.2,
+      "bytes": 8007838
+    },
+    {
+      "id": "inc-carefree",
+      "title": "Carefree",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Carefree\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "warm"
+      ],
+      "feels": [
+        "Bouncy",
+        "Bright",
+        "Calming",
+        "Uplifting"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Ukulele, Guitar, Marimba, Glock, Percussion",
+      "energy": 1,
+      "bpm": 96,
+      "density": "sparse",
+      "durationSec": 205.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+      "loudnessLufs": -20.2,
+      "truePeakDbtp": -3.2,
+      "bytes": 6566713
+    },
+    {
+      "id": "inc-carpe-diem",
+      "title": "Carpe Diem",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600023",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carpe%20Diem.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Carpe Diem\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "warm"
+      ],
+      "feels": [
+        "Bouncy",
+        "Bright",
+        "Uplifting"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Clarinet, Ukulele, Flute, Guitar, Xylophone, Percussion, Bass",
+      "energy": 2,
+      "bpm": 96,
+      "density": "busy",
+      "durationSec": 295.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "b6be2c037058349a3e53eb4410e079835ce6ef69f937e890fcb94548c55712ae",
+      "loudnessLufs": -15.8,
+      "truePeakDbtp": -4.0,
+      "bytes": 9443931
+    },
+    {
+      "id": "inc-on-hold-for-you",
+      "title": "On Hold for You",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2000019",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/On%20Hold%20for%20You.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"On Hold for You\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
         "bright"
       ],
-      "energy": 4,
-      "density": null,
-      "bpm": null,
+      "feels": [
+        "Bright",
+        "Grooving",
+        "Relaxed"
+      ],
+      "genre": "Jazz",
+      "instruments": "Tenor Sax, EP, Bass, Drums",
+      "energy": 3,
+      "bpm": 115,
+      "density": "medium",
+      "durationSec": 218.1,
       "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(80s power pop)+title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "859958e163a7c433c742d04f73c4e7a6f39b1f3be59afb23c1afbfcba4c02ea6",
+      "loudnessLufs": -13.0,
+      "truePeakDbtp": -0.4,
+      "bytes": 4365203
     },
     {
-      "id": "happy-dance",
-      "title": "Happy Dance",
-      "artist": "HoliznaCC0",
-      "album": "Power Pop!",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/happy-dance-2/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
+      "id": "inc-kawai-kitsune",
+      "title": "Kawai Kitsune",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500059",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Kawai%20Kitsune.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
       },
-      "durationSec": 155,
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Kawai Kitsune\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
       "mood": [
-        "playful",
         "bright"
       ],
-      "energy": 4,
-      "density": null,
-      "bpm": null,
+      "feels": [
+        "Bouncy",
+        "Bright",
+        "Calming"
+      ],
+      "genre": "Electronica",
+      "instruments": "Synths, Percussion",
+      "energy": 2,
+      "bpm": 116,
+      "density": "busy",
+      "durationSec": 242.1,
       "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(80s power pop)+title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "999ef5647f5aa1bdb36ca2993a3391eacd62ea196850055e5d0342d60f48b776",
+      "loudnessLufs": -15.2,
+      "truePeakDbtp": -0.3,
+      "bytes": 7750375
     },
     {
-      "id": "funky-pop",
-      "title": "Funky Pop",
-      "artist": "HoliznaCC0",
-      "album": "Power Pop!",
-      "sourceUrl": "https://freemusicarchive.org/music/holiznacc0/power-pop/funky-pop/",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "requiresAttribution": false,
+      "id": "inc-new-friendly",
+      "title": "New Friendly",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200005",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/New%20Friendly.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "licenseEvidence": {
-        "level": "album",
-        "checkedAt": "2026-09-17",
-        "page": "https://freemusicarchive.org/music/holiznacc0/power-pop/",
-        "note": "앨범 페이지에 CC0 1.0 Universal 표기. 트랙 페이지 개별 확인 필요"
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
       },
-      "durationSec": 142,
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"New Friendly\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
       "mood": [
-        "playful",
+        "bright"
+      ],
+      "feels": [
+        "Bouncy",
+        "Bright",
+        "Grooving",
+        "Uplifting"
+      ],
+      "genre": "Electronica",
+      "instruments": "Synths, Choir",
+      "energy": 3,
+      "bpm": 114,
+      "density": "busy",
+      "durationSec": 169.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "218c16ae19cae3770452a7ba1c32d0976778fc5061616141a6dcbf7f96684c33",
+      "loudnessLufs": -15.7,
+      "truePeakDbtp": -0.3,
+      "bytes": 6864453
+    },
+    {
+      "id": "inc-twisting",
+      "title": "Twisting ",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1800009",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Twisting.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Twisting \" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
         "confident"
       ],
+      "feels": [
+        "Driving",
+        "Grooving",
+        "Mysterious"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "Guitar, Bass, Drums, Synth",
       "energy": 4,
-      "density": null,
-      "bpm": null,
+      "bpm": 108,
+      "density": "busy",
+      "durationSec": 317.8,
       "loopable": null,
-      "vocals": null,
-      "instrumentalEvidence": "album-genre-tag(Instrumental)",
-      "artistTags": [],
-      "tagSource": "album-description(80s power pop)+title",
-      "verified": false,
-      "verifiedBy": null,
-      "verifiedAt": null,
-      "file": null,
-      "sha256": null,
-      "loudnessLufs": null
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "c25fb6711f504d1a5668dac59a9dc1216308bc9fc8fafe52c52e651876eed827",
+      "loudnessLufs": -18.0,
+      "truePeakDbtp": -0.5,
+      "bytes": 10172873
+    },
+    {
+      "id": "inc-rising-tide",
+      "title": "Rising Tide",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1900010",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Rising%20Tide.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Rising Tide\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "confident"
+      ],
+      "feels": [
+        "Driving",
+        "Grooving",
+        "Mysterious"
+      ],
+      "genre": "Electronica",
+      "instruments": "Synths, Percussion",
+      "energy": 4,
+      "bpm": 106,
+      "density": "busy",
+      "durationSec": 277.4,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "56e5f0b8f69de4bfc81abd6b50414db2e14a2f487de01a38027188c18d00d420",
+      "loudnessLufs": -18.1,
+      "truePeakDbtp": -1.1,
+      "bytes": 11100913
+    },
+    {
+      "id": "inc-americana",
+      "title": "Americana",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200092",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Americana.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Americana\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "confident",
+        "inspiring"
+      ],
+      "feels": [
+        "Epic",
+        "Uplifting"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "Cellos, Bass Clarinet, Alto Flute, English Horn, Clarinet. French Horns, Trombones, Tubas, Percussion, Celesta, Violins, Basses",
+      "energy": 4,
+      "bpm": 104,
+      "density": "busy",
+      "durationSec": 202.2,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "664880bb7368b8b85e362a5dae28338de4e4741205991a0817ceeaabe7366153",
+      "loudnessLufs": -16.9,
+      "truePeakDbtp": -0.1,
+      "bytes": 8090770
+    },
+    {
+      "id": "inc-comin-round-the-mountain",
+      "title": "Comin Round the Mountain",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100817",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Comin%20Round%20the%20Mountain.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Comin Round the Mountain\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "inspiring"
+      ],
+      "feels": [
+        "Bouncy",
+        "Bright",
+        "Grooving",
+        "Uplifting"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Guitar, Bass, Kit, Synths",
+      "energy": 3,
+      "bpm": 104,
+      "density": "busy",
+      "durationSec": 173.9,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "f6d2ca98e96807aba7d72755511b83fcfa73bb9444568c8e53393cbbaf7e8dee",
+      "loudnessLufs": -8.0,
+      "truePeakDbtp": 0.7,
+      "bytes": 6961027
+    },
+    {
+      "id": "inc-somewhere-sunny-ver-2",
+      "title": "Somewhere Sunny (ver 2)",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100567",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Somewhere%20Sunny%20%28ver%202%29.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Somewhere Sunny (ver 2)\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "inspiring"
+      ],
+      "feels": [
+        "Bright",
+        "Calming",
+        "Relaxed",
+        "Uplifting"
+      ],
+      "genre": "Pop",
+      "instruments": "Guitar",
+      "energy": 2,
+      "bpm": 106,
+      "density": "medium",
+      "durationSec": 114.7,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "cdbe2705c8464b92868c4411540005dde2bc83863aa585b8850110f65faeeeda",
+      "loudnessLufs": -16.9,
+      "truePeakDbtp": -0.7,
+      "bytes": 4689502
+    },
+    {
+      "id": "inc-mischief-maker",
+      "title": "Mischief Maker",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700009",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Mischief%20Maker.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Mischief Maker\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "playful"
+      ],
+      "feels": [
+        "Bouncy",
+        "Driving",
+        "Humorous"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "Virginal, Dulcimer, Bass, Drums, Xylophone",
+      "energy": 5,
+      "bpm": 125,
+      "density": "busy",
+      "durationSec": 201.7,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "efc8109e080430f026b77dbbe2031e223e861fe195357cd113b15b14d948fb1f",
+      "loudnessLufs": -13.4,
+      "truePeakDbtp": -0.2,
+      "bytes": 6455511
+    },
+    {
+      "id": "inc-blipotron",
+      "title": "Blipotron",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100514",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Blipotron.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Blipotron\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "playful"
+      ],
+      "feels": [
+        "Bouncy",
+        "Driving",
+        "Grooving"
+      ],
+      "genre": "Electronica",
+      "instruments": "Synths",
+      "energy": 4,
+      "bpm": 124,
+      "density": "busy",
+      "durationSec": 149.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "51308c1c592bd74517ebb6f2babcbfdae63c7c5292fdc9c71939d57747058960",
+      "loudnessLufs": -15.0,
+      "truePeakDbtp": -0.4,
+      "bytes": 6075516
+    },
+    {
+      "id": "inc-moon-lounge-omicron-prime",
+      "title": "Moon Lounge Omicron Prime",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200084",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Moon%20Lounge%20Omicron%20Prime.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Moon Lounge Omicron Prime\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "playful"
+      ],
+      "feels": [
+        "Bouncy",
+        "Humorous"
+      ],
+      "genre": "Contemporary",
+      "instruments": "Synths, Percussion, Organ, Guitar",
+      "energy": 3,
+      "bpm": 124,
+      "density": "busy",
+      "durationSec": 224.4,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "c3636e4b76c9e6ba31a7fc7d78477c608b4d8be50cc07059317dd7dcd2913e5c",
+      "loudnessLufs": -11.8,
+      "truePeakDbtp": -0.1,
+      "bytes": 8979898
+    },
+    {
+      "id": "inc-ethernight-club",
+      "title": "Ethernight Club",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2100002",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ethernight%20Club.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Ethernight Club\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "futuristic"
+      ],
+      "feels": [
+        "Driving",
+        "Grooving",
+        "Mysterious"
+      ],
+      "genre": "Electronica",
+      "instruments": "Marimba, Bells, Percussion, Synths",
+      "energy": 4,
+      "bpm": 117,
+      "density": "busy",
+      "durationSec": 305.7,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "40c13873da38bff6da4e1e8d7e2907e05d4c308d25707aa707f3032bffe74064",
+      "loudnessLufs": -15.4,
+      "truePeakDbtp": 0.1,
+      "bytes": 6116475
+    },
+    {
+      "id": "inc-dance-monster",
+      "title": "Dance Monster",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100272",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dance%20Monster.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Dance Monster\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "futuristic"
+      ],
+      "feels": [
+        "Bright",
+        "Driving"
+      ],
+      "genre": "Electronica",
+      "instruments": "",
+      "energy": 4,
+      "bpm": 120,
+      "density": "busy",
+      "durationSec": 200.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "cc34a2551ba2caef00469ecff3b7a86dae9e85f4f6fd3a8469724139bfed52a6",
+      "loudnessLufs": -16.9,
+      "truePeakDbtp": -0.2,
+      "bytes": 7396101
+    },
+    {
+      "id": "inc-delightful-d",
+      "title": "Delightful D",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600057",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Delightful%20D.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Delightful D\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "futuristic"
+      ],
+      "feels": [
+        "Bright",
+        "Driving",
+        "Grooving"
+      ],
+      "genre": "Electronica",
+      "instruments": "Synth, Percussion",
+      "energy": 4,
+      "bpm": 120,
+      "density": "busy",
+      "durationSec": 184.1,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "6ab6575d9650dfa931d3b06040ba452051887a08f01ff91e9830e4095df519ed",
+      "loudnessLufs": -10.3,
+      "truePeakDbtp": 1.0,
+      "bytes": 5892100
+    },
+    {
+      "id": "inc-on-the-shore",
+      "title": "On the Shore",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200016",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/On%20the%20Shore.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"On the Shore\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "serious"
+      ],
+      "feels": [
+        "Calming",
+        "Mystical",
+        "Somber"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "Strings, Glock, Tympani, Flute",
+      "energy": 1,
+      "bpm": 82,
+      "density": "sparse",
+      "durationSec": 100.8,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "b34b9e6b013162cec2ad40f09cea83c6301f4acb016e716910a29b3fdae0a42b",
+      "loudnessLufs": -16.6,
+      "truePeakDbtp": -0.1,
+      "bytes": 4033422
+    },
+    {
+      "id": "inc-the-path-of-the-goblin-king",
+      "title": "The Path of the Goblin King",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100873",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/The%20Path%20of%20the%20Goblin%20King.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"The Path of the Goblin King\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "serious"
+      ],
+      "feels": [
+        "Mysterious",
+        "Relaxed"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "Strings, Flute, Clarinet, Oboe, Celesta, Tympani",
+      "energy": 2,
+      "bpm": 89,
+      "density": "medium",
+      "durationSec": 206.4,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "f8a30fac2528bb0a630cd2d7500daf10b64860ec7e91823390cc6e1cb545175a",
+      "loudnessLufs": -22.7,
+      "truePeakDbtp": -0.1,
+      "bytes": 8258790
+    },
+    {
+      "id": "inc-andreas-theme",
+      "title": "Andreas Theme",
+      "artist": "Kevin MacLeod",
+      "source": "incompetech",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700080",
+      "file": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Andreas%20Theme.mp3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseEvidence": {
+        "level": "source",
+        "note": "incompetech.com/music/royalty-free/licenses/: Creative Commons - free, requires credit"
+      },
+      "licenseCheckedAt": "2026-09-18",
+      "requiresAttribution": true,
+      "attribution": "\"Andreas Theme\" Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+      "mood": [
+        "serious"
+      ],
+      "feels": [
+        "Calm",
+        "Grooving",
+        "Mysterious"
+      ],
+      "genre": "Soundtrack",
+      "instruments": "EP, Drums, Bass, Gemshorn, Ocarina, Synth, Percussion",
+      "energy": 1,
+      "bpm": 90,
+      "density": "sparse",
+      "durationSec": 217.4,
+      "loopable": null,
+      "vocals": false,
+      "verified": "popularity",
+      "popularityEvidence": "Kevin MacLeod's CC BY library: featured in thousands of films and millions of YouTube videos; \"Monkeys Spinning Monkeys\" and \"Electrodoodle\" played 151.8 billion times on TikTok, 2021-2026 (Wikipedia, Kevin MacLeod, retrieved 2026-09-18). Source-level evidence; per-track plays are not published.",
+      "sha256": "8b5c57484705b1ffcc69d89da2f57e7159512381b377298eb2dfd4ab3b86dce2",
+      "loudnessLufs": -11.3,
+      "truePeakDbtp": 0.3,
+      "bytes": 6958766
     }
   ]
 }

@@ -158,6 +158,44 @@ class ComposeVerifyTest(ProjectCase):
         cue = next(c for c in rep["checks"] if c["check"] == "narrationCue")
         self.assertGreater(cue["maxVolumeDb"], -30)
 
+    def test_catalog_pick_use_and_credits(self):
+        make_tone(self.project / "trackA.wav", 6.0)
+        make_tone(self.project / "trackB.wav", 6.0)
+        import hashlib
+        cat = {"schemaVersion": 2, "vocabulary": {"mood": ["calm", "focused", "bright"]}, "sources": [], "tracks": [
+            {"id": "a", "title": "A", "artist": "X", "file": str(self.project / "trackA.wav"), "url": "http://x/a", "license": "CC BY 4.0",
+             "requiresAttribution": True, "attribution": "\"A\" X (x.com) CC BY 4.0", "mood": ["calm"], "energy": 1, "density": "sparse",
+             "durationSec": 6.0, "vocals": False, "verified": "popularity", "sha256": hashlib.sha256((self.project / "trackA.wav").read_bytes()).hexdigest()},
+            {"id": "b", "title": "B", "artist": "X", "file": str(self.project / "trackB.wav"), "url": "http://x/b", "license": "CC0",
+             "requiresAttribution": False, "mood": ["focused", "bright"], "energy": 4, "density": "busy", "durationSec": 6.0, "vocals": False,
+             "verified": "listened", "sha256": "0" * 64}]}
+        self.write_json("catalog.json", cat)
+        env = {"DV_BGM_CACHE": str(self.project / "cache")}
+        code, out, err = dv("bgm", "pick", "--mood", "calm,focused", "--energy", "2", "--json", "--catalog", "catalog.json", cwd=self.project, env=env)
+        self.assertEqual(code, 0, err)
+        ranked = json.loads(out)
+        self.assertEqual([r["id"] for r in ranked], ["b", "a"])          # listened + no attribution beat energy distance
+        code, out, _ = dv("bgm", "pick", "--mood", "calm,focused", "--narration", "--json", "--catalog", "catalog.json", cwd=self.project, env=env)
+        self.assertEqual([r["id"] for r in json.loads(out)], ["a"])       # FR-076: busy/energy 4 excluded under narration
+        # trust=listened restricts to human-verified tracks
+        self.write_json("demo/config.json", {"app": {"url": "http://x"}, "bgm": {"source": "none", "trust": "listened"}})
+        code, out, _ = dv("bgm", "pick", "--mood", "calm,focused", "--json", "--catalog", "catalog.json", cwd=self.project, env=env)
+        self.assertEqual([r["id"] for r in json.loads(out)], ["b"])
+        # use: sha256 verified on fetch; a wrong hash is refused
+        code, _, err = dv("bgm", "use", "b", "--catalog", "catalog.json", cwd=self.project, env=env)
+        self.assertEqual(code, 1)
+        self.assertIn("sha256 mismatch", err)
+        code, out, err = dv("bgm", "use", "a", "--catalog", "catalog.json", cwd=self.project, env=env)
+        self.assertEqual(code, 0, err)
+        cfg = self.read_json("demo/config.json")
+        self.assertEqual(cfg["bgm"]["source"], "catalog")
+        self.assertTrue(cfg["bgm"]["requiresAttribution"])
+        code, out, err = dv("compose", cwd=self.project)
+        self.assertEqual(code, 0, err)
+        credits = (self.demo / "output" / "CREDITS.txt").read_text()
+        self.assertIn("CC BY 4.0", credits)
+        self.assertTrue(any("CREDITS.txt" in n for n in self.read_json("demo/manifest.json")["notes"]))
+
     def test_draft_compose_uses_cuts_and_no_audio(self):
         make_tone(self.project / "tone.wav")
         dv("bgm", "probe", str(self.project / "tone.wav"), cwd=self.project)

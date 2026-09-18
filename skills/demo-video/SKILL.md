@@ -76,6 +76,8 @@ Then present the scene outline with a runtime estimate and **stop for approval**
                     27.5s
 ```
 
+BGM, unless the user gave a file or said none: build the concept profile from the scenario (audience, tone, domain, narration yes/no - the table in DESIGN 6절 maps it to moods and energy) and run `dv.py bgm pick --mood <m1,m2> --energy <n> [--narration]`. Show the top 3 with their reasons here, at G2; after approval `dv.py bgm use <id>`. Catalog tracks are CC BY (Kevin MacLeod, popularity tier): say that a credit line must go in the description or outro - compose writes `output/CREDITS.txt`.
+
 The target length from intake (`config.video.targetSec`) is the budget: allocate it across scenes so every feature the user asked for gets its time, and pace each scene within the rules (≤ 9s per scene, ≤ 7s per subtitle) by adding scenes, not by stretching them. `validate` warns when the estimate misses the target by more than 15% either way. Only when the user gave no target, suggest 60-90s and propose a split above that. This is the cheapest point to change direction - everything after it encodes these decisions.
 
 ## Phase 3 - Write the detailed storyboard

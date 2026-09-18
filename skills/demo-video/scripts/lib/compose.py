@@ -273,13 +273,13 @@ def main(argv=None):
     narration = None if no_audio else find_narration(root, common.name_of(sb))
     bgm_cfg = (cfg.get("bgm") or {}) if not no_audio else {}
     bgm_path = None
-    if bgm_cfg.get("source") == "file" and bgm_cfg.get("path"):
+    if bgm_cfg.get("source") in ("file", "catalog") and bgm_cfg.get("path"):
         bgm_path = Path(bgm_cfg["path"])
         bgm_path = bgm_path if bgm_path.is_absolute() else root.parent / bgm_path
         if not bgm_path.exists():
-            common.die(f"BGM file not found: {bgm_path} (dv.py bgm probe <file> registers it)")
+            common.die(f"BGM file not found: {bgm_path} (dv.py bgm probe <file> or dv.py bgm use <id> registers it)")
     elif bgm_cfg.get("source") == "catalog":
-        notes.append("bgm.source catalog is not available yet (M3 BGM 1차) - composing without BGM")
+        common.die("config.bgm.source is catalog but no track is registered - run dv.py bgm use <id>")
 
     audio_inputs, achain, amap, aenc, unplaced, placed = [], [], [], [], [], 0
     n_in = len(clips)
@@ -367,6 +367,13 @@ def main(argv=None):
         common.die("ffmpeg failed - rerun with --dry-run and inspect the filter graph")
 
     outputs = [mp4]
+    # FR-071: a CC BY track needs its credit shipped with the video.
+    if bgm_path and bgm_cfg.get("requiresAttribution"):
+        credits = out_dir / "CREDITS.txt"
+        credits.write_text("Music\n\n" + (bgm_cfg.get("attribution") or f"{bgm_cfg.get('title')} - {bgm_cfg.get('artist')} ({bgm_cfg.get('license')})")
+                           + f"\n\nSource: {bgm_cfg.get('url', '')}\n", encoding="utf-8")
+        outputs.append(credits)
+        notes.append("BGM is CC BY: output/CREDITS.txt written - the credit must appear in the video description or outro")
     if cues and not args.no_srt:
         srt = out_dir / f"{name}.srt"
         with srt.open("w", encoding="utf-8") as f:
