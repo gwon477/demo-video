@@ -12,6 +12,7 @@ if ($SelfDir -ne $RepoDir -and -not (Test-Path (Join-Path $RepoDir ".git"))) {
 } elseif (Test-Path (Join-Path $RepoDir ".git")) {
   Write-Host "updating $RepoDir"
   git -C $RepoDir pull --ff-only
+  if ($LASTEXITCODE -ne 0) { Write-Host "warning: could not pull (offline or no credentials) - installing the checkout as is" }
 }
 if (-not (Test-Path (Join-Path $SkillSrc "SKILL.md"))) { throw "$SkillSrc\SKILL.md not found" }
 

@@ -14,7 +14,7 @@ if [ "$SELF_DIR" != "$REPO_DIR" ] && [ ! -d "$REPO_DIR/.git" ]; then
   git clone "$(git -C "$SELF_DIR" remote get-url origin 2>/dev/null || echo git@github.com:gwon477/demo-video.git)" "$REPO_DIR"
 elif [ -d "$REPO_DIR/.git" ]; then
   echo "updating $REPO_DIR"
-  git -C "$REPO_DIR" pull --ff-only
+  git -C "$REPO_DIR" pull --ff-only || echo "warning: could not pull (offline or no credentials) - installing the checkout as is"
 fi
 [ -f "$SKILL_SRC/SKILL.md" ] || { echo "error: $SKILL_SRC/SKILL.md not found" >&2; exit 1; }
 

@@ -464,8 +464,8 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 **M1. 설치와 환경 점검**
 
 - [ ] `doctor` 구현 (의존성, 버전, ffmpeg 필터, TTS, 원격 VERSION 비교)
-- [ ] `install.sh`, `install.ps1`, 심볼릭 링크와 복사 폴백
-- [ ] `.claude-plugin/plugin.json`, `marketplace.json`, `AGENTS.md`, README
+- [x] `install.sh`, `install.ps1`, 심볼릭 링크와 복사 폴백 (2026-09-18, 격리된 HOME에서 clone → 링크 → doctor 통과 확인)
+- [x] `.claude-plugin/plugin.json`, `marketplace.json`, `AGENTS.md`, README. 저장소: https://github.com/gwon477/demo-video (비공개)
 - [ ] `init`, `status`, `approve`와 `state.json` 해시 게이트
 - 완료 기준: 초안을 본 적 없는 팀원 1명이 README만으로 설치하고 `doctor`를 통과한다 (SC-001).
 
