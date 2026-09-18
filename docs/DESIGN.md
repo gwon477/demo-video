@@ -319,7 +319,7 @@ flowchart TD
 | --- | --- |
 | FR-040 | 기본 구조는 인트로 → 페이드인 → 본문 장면들 → 페이드아웃 → 아웃트로로 고정한다 |
 | FR-041 | 사용자가 영상을 주면 `compose`가 해상도·fps·코덱을 본문과 맞춰 정규화한 뒤 붙인다. 비율이 다르면 레터박스하고 그 사실을 보고한다 |
-| FR-042 | 영상이 없으면 `assets/intro/default.html`에 제목·태그라인·로고를 주입해 녹화한다. 사용자가 새 디자인을 원하면 에이전트가 HTML을 새로 작성해 `demo/assets/`에 두고 같은 경로로 녹화한다 |
+| FR-042 | 영상이 없으면 제품 CI에서 만든다. `dv.py brand probe`가 실행 중인 앱에서 로고·색·폰트·이름을 `demo/brand.json`으로 읽고, `dv.py cards`가 네 가지 디자인(brand-dark, brand-light, accent-block, split)을 `demo/assets/`에 HTML로 쓰고 갤러리를 만든다. 사용자가 고르거나 고친 뒤 `cards --apply`로 storyboard의 template을 바꾼다. 번들 `default.html`은 폴백이다 |
 | FR-043 | 장면 사이 전환은 기본 `fade` 400ms, 허용 범위 300~700ms. 같은 페이지 안에서 이어지는 장면은 `cut`. 전환은 ffmpeg `xfade`로 합성 단계에서 넣는다 |
 | FR-044 | 인트로는 2.5초 이하. 인트로 다음 첫 자막은 시청자의 목표나 문제를 말하는 문장이며 `hook: true`로 표시한다(첫 5초 안에 문제 제시). 아웃트로는 다음 행동(CTA) 한 줄을 갖고 2~4초다 |
 | FR-045 | 목표 길이는 사용자가 정한다(`init --target-sec`, `config.video.targetSec`). 2단계는 이 값을 장면 예산으로 배분해 콘티를 짜고, `validate`는 추정 길이가 목표의 ±15%를 벗어나면 경고한다(짧아도 경고, 실패는 없음). 목표가 없을 때만 기본값 90초 초과 경고와 분할 제안 |
@@ -376,6 +376,8 @@ flowchart TD
 | `init` | 인테이크 답 → `config.json`, `state.json` | `demo/` 골격 생성, `.gitignore`에 `demo/scenes/*.webm`, `demo/output/`, 인증 상태 파일 추가 | 앱 URL 접속 불가 |
 | `survey shots` | survey의 라우트 목록 → 스크린샷, 접근성 스냅샷 | 코드 분석은 에이전트가 하고, 이 명령은 화면 순회의 반복 작업만 맡는다. 로그인 상태를 `demo/.auth/state.json`에 저장해 재사용 | 라우트 절반 이상 실패 |
 | `validate [--fix]` | storyboard → 검증 결과 | 스키마, 액션 타입, 자막 길이(FR-012), 노출 시간(FR-013), 줌 규칙(FR-020~022), 로케이터가 survey에 있는지, show 상호작용에 대응 액션이 있는지(FR-062), evidence의 소스·화면 근거가 둘 다 채워졌는지. `--fix`는 hold/dwell만 채운다 | 규칙 위반 1건 이상 |
+| `brand probe` | 앱 URL → `demo/brand.json` | `<link rel=icon>`·헤더 로고, `:root` 색 변수(accent/primary/brand 우선, 없으면 버튼 배경색), body 색·배경·폰트, 제품명 | 앱 접속 불가 |
+| `cards` | brand.json + storyboard intro/outro 필드 → `demo/assets/{intro,outro}-<variant>.html`, `demo/cards.png` | 네 변형을 실제 해상도로 스크린샷해 갤러리로 묶는다. `--apply`는 storyboard template 교체 | brand.json 없음 |
 | `styles` | 프리셋 + 스크린샷 → `demo/styles.png`, `--apply` → `demo/theme.json` | 자막 5종·강조 박스 5종 프리셋(`assets/styles/presets.json`)을 prelude와 같은 CSS로 실제 화면 위에 그려 사용자가 고르게 한다. 선택은 프로젝트 테마(`demo/theme.json`)에 저장되고 번들·사용자 테마 위에 덮인다 | 프리셋 이름 오류 |
 | `sheet` | storyboard + 스크린샷 → `sheet.html` | 스텝마다 스크린샷에 자막과 줌 영역을 그려 한 페이지로 만든다. 렌더 없이 수 초 안에 끝난다 | validate 미통과 |
 | `approve <stage>` | 파일 → `state.json` | 승인 시점의 해시 기록 | 대상 파일 없음 |

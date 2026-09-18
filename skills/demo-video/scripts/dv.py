@@ -14,6 +14,8 @@ Commands (more land per DESIGN.md section 7):
   validate     enforce the storyboard schema and quality rules; --fix fills holdMs/dwellMs
   sheet        storyboard + screenshots -> demo/sheet.html for the G3 review
   styles       subtitle/highlight presets drawn on a real frame; --apply writes demo/theme.json
+  brand        probe: read the app's logo, colors, font and name into demo/brand.json
+  cards        intro/outro designs from brand.json -> demo/cards.png; --apply <variant> sets the storyboard templates
   render       generate/assemble scene bodies with the prelude and record .webm clips (needs G3)
   check-sync   verify storyboard, bodies, narration and recorded cues agree
   compose      join clips with xfade transitions, mux narration/BGM, encode the mp4 once
@@ -39,6 +41,8 @@ COMMANDS = {
     "validate": "lib.validate",
     "sheet": "lib.sheet",
     "styles": "lib.styles",
+    "brand": "lib.brand",
+    "cards": "lib.cards",
     "render": "lib.render",
     "check-sync": "lib.checksync",
     "compose": "lib.compose",
