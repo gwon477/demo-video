@@ -10,7 +10,7 @@ You therefore cannot import a helper library. `dv.py render` inlines `scripts/pr
 
 ## Scene bodies
 
-With schemaVersion 2, `dv.py render` generates every body from the storyboard (marker line `// @generated`). Remove the marker to take a body over by hand - only for logic the action list cannot express.
+With schemaVersion 2, `dv.py render` generates every body from the storyboard (marker line `// @generated`). To take a body over by hand run `dv.py body <scene> --hand`: the file loses the marker and gains `// @scene <hash>` (a hash of the scene's url, waitFor, setup and steps). `render` fails when that hash no longer matches the storyboard, so a hand-written body cannot silently fall behind; after reconciling, `dv.py body <scene> --mark` refreshes the line. Only for logic the action list cannot express.
 
 A scene body (`demo/scenes/<id>.body.js`) is **statements only** - no wrapper, no exports:
 

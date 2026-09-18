@@ -379,7 +379,8 @@ flowchart TD
 | `brand probe` | 앱 URL → `demo/brand.json` | `<link rel=icon>`·헤더 로고, `:root` 색 변수(accent/primary/brand 우선, 없으면 버튼 배경색), body 색·배경·폰트, 제품명 | 앱 접속 불가 |
 | `cards` | brand.json + storyboard intro/outro 필드 → `demo/assets/{intro,outro}-<variant>.html`, `demo/cards.png` | 네 변형을 실제 해상도로 스크린샷해 갤러리로 묶는다. `--apply`는 storyboard template 교체 | brand.json 없음 |
 | `styles` | 프리셋 + 스크린샷 → `demo/styles.png`, `--apply` → `demo/theme.json` | 자막 5종·강조 박스 5종 프리셋(`assets/styles/presets.json`)을 prelude와 같은 CSS로 실제 화면 위에 그려 사용자가 고르게 한다. 선택은 프로젝트 테마(`demo/theme.json`)에 저장되고 번들·사용자 테마 위에 덮인다 | 프리셋 이름 오류 |
-| `sheet` | storyboard + 스크린샷 → `sheet.html` | 스텝마다 스크린샷에 자막과 줌 영역을 그려 한 페이지로 만든다. 렌더 없이 수 초 안에 끝난다 | validate 미통과 |
+| `sheet` | storyboard + 스크린샷 → `sheet.html` | 스텝마다 스크린샷에 자막과 줌 영역을 그려 한 페이지로 만든다. `--capture`는 장면마다 body의 설정 부분(`// ---record---` 위, 수기 body 포함)을 실행한 뒤 찍으므로 로그인·스텁이 필요한 장면도 실제 클립과 같다 | validate 미통과 |
+| `body <scene> [--hand\|--mark]` | storyboard → `scenes/<id>.body.js` | `--hand`는 생성 문장에 `// @scene <해시>`를 붙여 수기 편집용으로 쓴다. `render`는 수기 body의 해시가 현재 장면(url·waitFor·setup·steps)과 다르면 멈춘다. `--mark`는 조정 후 해시를 갱신 | 장면 없음 |
 | `approve <stage>` | 파일 → `state.json` | 승인 시점의 해시 기록 | 대상 파일 없음 |
 | `narrate [--dry-run]` | storyboard → 음성 파일, `narration.json` | 절 경계 쉼, 숫자·오류 문구 감속, 강조어 처리. hold/dwell 확장을 storyboard에 다시 쓴다 | TTS 프로바이더 없음 |
 | `render [scene] [--draft] [--jobs N]` | storyboard + body → `.webm`, `.timing.json` | body를 prelude로 감싸 녹화, 꼬리 정지 구간 트림, 해시 캐시로 변경 없는 장면은 건너뛴다 | G3 미승인, body 실행 오류 |
@@ -528,7 +529,7 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 | screencast 오버레이가 줌의 영향을 받는다 | 자막이 함께 확대되어 SC-004 실패 | M2 스파이크에서 "받지 않음"으로 확인 완료. `verify`의 자막 영역 검사로 회귀를 막는다 |
 | `page.screencast` API가 Playwright 버전에 따라 바뀐다 | 렌더 실패 | `doctor`가 검증된 버전 범위를 검사하고, 설치 명령에 버전을 고정한다 |
 | 모델이 게이트를 건너뛰고 렌더한다 | 승인 없는 영상 생성 | `state.json` 해시 게이트가 스크립트 수준에서 차단 |
-| 모델이 body를 제각각 작성한다 | 결과 편차, 싱크 오류 | storyboard에서 body 자동 생성을 기본으로 하고 수기 작성은 예외로 한정 |
+| 모델이 body를 제각각 작성한다 | 결과 편차, 싱크 오류 | storyboard에서 body 자동 생성을 기본으로 하고 수기 작성은 예외로 한정. 수기 body는 `@scene` 해시로 storyboard 변경을 따라가지 못하면 `render`가 막는다 |
 | 대상 앱의 데이터가 렌더마다 달라진다 | 재렌더 결과 불일치 | `resetCommand`, `mutates` 표시, 인테이크에서 시드 데이터 확인 |
 | 영상에 계정·개인정보가 찍힌다 | 외부 공유 시 노출 | 데모 전용 계정 사용을 인테이크에서 요구, 비밀번호 필드 비노출 (FR-032), `.auth/`는 gitignore |
 | Windows에서 링크·TTS·경로 문제 | 일부 팀원 설치 실패 | 복사 폴백, `edge-tts`, 경로는 `pathlib`만 사용. A1 가정이 틀리면 범위 축소 |
