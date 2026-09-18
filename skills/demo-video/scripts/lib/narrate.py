@@ -1,31 +1,27 @@
 """dv.py narrate - generate narration audio for a storyboard and reconcile subtitle timing.
 
     dv.py narrate [--storyboard demo/storyboard.json]
-    dv.py narrate --dry-run     # preview, write nothing
+    dv.py narrate --dry-run     # estimate, write nothing
+    dv.py narrate --provider edge-tts --voice ko-KR-SunHiNeural
 
-Run this BEFORE rendering. Speech is slower than reading, so a subtitle that
-was long enough to read can be too short to say. This measures every line and
-sets `holdMs` to what the voice actually needs, and raises `dwellMs` only when
-the scene is shorter than its narration end to end, so render.py records scenes
-that already have room for the voice-over.
+Run this BEFORE rendering. Speech is slower than reading, so a subtitle that was
+long enough to read can be too short to say. Every line is measured and the
+step gets `narrationMs`; `holdMs` becomes max(reading time, speech + 400ms)
+(FR-013) and `dwellMs` is refilled by the validate rules, so render records
+scenes that already have room for the voice.
 
-Uses macOS `say` (provider abstraction is scheduled for M4). A voice that is
-listed but not installed produces ~16ms of silence; the probe below refuses it.
-
-Prosody is derived from what each line says: a beat at the first clause
-boundary, a slower rate for lines carrying numbers or error wording, and
-emphasis on a substring the step names via `emphasis`. The markup is written
-back into the storyboard so it stays visible and editable, and a line that
-already carries [[...]] is never touched. Disable with --no-auto-prosody or
-`narration.autoProsody: false`. See references/narration.md.
+Provider and voice come from config.narration (`dv.py init --narration say|edge-tts`),
+overridable here. Rates come from theme.narration (150 wpm, 120 for careful lines).
+Prosody markup ([[slnc]], [[rate]], [[emph]]) is Apple `say` syntax; edge-tts gets
+a plain rendering of it. A line that already carries [[...]] is never rewritten.
 """
 import argparse
 import math
 import re
-import subprocess
 import sys
 
-from . import common
+from . import common, tts
+from .validate import hold_ms, validate
 
 PAD_MS = 400          # breathing room after a line before the subtitle clears
 MIN_HOLD_MS = 1800
@@ -97,10 +93,10 @@ die = common.die
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="dv.py narrate", description=__doc__.splitlines()[0])
     ap.add_argument("--storyboard", default=None)
-    ap.add_argument("--voice", default=None, help="override the storyboard voice")
-    ap.add_argument("--rate", type=int, default=None, help="words per minute; default 180")
-    ap.add_argument("--no-auto-prosody", action="store_true",
-                    help="speak the lines exactly as written")
+    ap.add_argument("--provider", default=None, choices=["say", "edge-tts", "none"])
+    ap.add_argument("--voice", default=None)
+    ap.add_argument("--rate", type=int, default=None, help="words per minute; default theme.narration.rate")
+    ap.add_argument("--no-auto-prosody", action="store_true", help="speak the lines exactly as written")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args(argv)
 
@@ -108,22 +104,29 @@ def main(argv=None):
     sb = common.load_json(sb_path)
     demo_dir = sb_path.parent
     audio_dir = demo_dir / "audio"
-    name = common.name_of(sb)   # narration 파일을 스토리보드별로 분리
+    name = common.name_of(sb)
     version = common.schema_version(sb)
-
-    cfg = sb.get("narration") or {}
-    if cfg.get("enabled") is False:
-        die("storyboard sets narration.enabled = false")
-    voice = args.voice or cfg.get("voice") or "Yuna"
-    rate = args.rate or cfg.get("rate") or 180
-    auto = cfg.get("autoProsody", True) and not args.no_auto_prosody
+    theme = common.load_theme(demo_dir)
+    cfg_p = demo_dir / "config.json"
+    cfg = (common.load_json(cfg_p) if cfg_p.exists() else {}).get("narration") or {}
+    sbn = sb.get("narration") or (sb.get("meta") or {}).get("narration") or {}
+    if isinstance(sbn, bool):
+        sbn = {"enabled": sbn}
+    provider = args.provider or cfg.get("provider") or ("say" if sbn.get("voice") else None) or "none"
+    if provider == "none" or sbn.get("enabled") is False:
+        die("narration is off (config.narration.provider = none). Run `dv.py init --narration say|edge-tts`, "
+            "or pass --provider")
+    voice = args.voice or cfg.get("voice") or sbn.get("voice") or tts.DEFAULT_VOICE[provider]
+    rate = args.rate or sbn.get("rate") or theme["narration"]["rate"]
+    careful_rate = theme["narration"].get("carefulRate", CAREFUL_RATE)
+    pad = theme["narration"].get("padMs", PAD_MS)
+    auto = sbn.get("autoProsody", True) and not args.no_auto_prosody
 
     audio_dir.mkdir(parents=True, exist_ok=True)
-    probe = audio_dir / ".voice-check.aiff"
-    subprocess.run(["say", "-v", voice, "-o", str(probe), "테스트"], capture_output=True)
-    if not probe.exists() or duration_ms(probe) < 200:
-        die(f"voice '{voice}' produces no audio - it is listed but not installed. "
-            f"Try Yuna, or install the voice in System Settings > Accessibility > Spoken Content.")
+    if not args.dry_run:
+        problem = tts.check_voice(provider, voice, audio_dir)
+        if problem:
+            die(problem)
 
     lines, changed, prosody = [], [], []
     for scene in sb.get("scenes") or []:
@@ -131,70 +134,58 @@ def main(argv=None):
         idx = 0
         for item in common.subtitle_steps(scene, version):
             step = item["step"]
-            # v2 keeps text/narration under step.subtitle; v1 on the step itself.
             sub = step["subtitle"] if version >= 2 else step
+            shown = sub.get("text", "")
             if sub.get("narration") is False:      # subtitle only, stay silent
-                silent = reading_ms(sub.get("text", ""))
-                if step.get("holdMs") != silent:
-                    changed.append((sid, idx, step.get("holdMs"), silent))
-                    step["holdMs"] = silent         # no voice: silent reading speed
+                step.pop("narrationMs", None)
                 idx += 1
                 continue
-            text = sub.get("narration") or sub.get("text")
+            text = sub.get("narration") or shown
             if not text:
                 idx += 1
                 continue
-
             if auto:
                 annotated, notes = auto_prosody(text, sub.get("emphasis"))
                 if notes:
                     prosody.append((sid, idx, notes))
                     sub["narration"] = annotated   # written back so it is editable
                     text = annotated
-
-            rel = f"audio/{sid}-{idx}.aiff"
+            careful = text.startswith(f"[[rate {CAREFUL_RATE}]]")
+            line_rate = careful_rate if careful else rate
+            rel = f"audio/{sid}-{idx}.{tts.ext(provider)}"
             out = demo_dir / rel
             if not args.dry_run:
-                r = subprocess.run(["say", "-v", voice, "-r", str(rate), "-o", str(out), text],
-                                   capture_output=True, text=True)
-                if r.returncode != 0:
-                    die(f"say failed on {sid}[{idx}]: {r.stderr.strip()}")
-                ms = duration_ms(out)
+                try:
+                    ms = tts.synthesize(provider, voice, line_rate, text, out)
+                except RuntimeError as e:
+                    die(f"{sid}[{idx}]: {e}")
             else:
-                ms = int(len(spoken_text(text)) * 125)   # ~0.125s/char at rate 180
+                ms = int(len(spoken_text(text)) * 60000 / (line_rate * 2.2))   # ~2.2 syllables per "word"
 
-            # A narrated line is paced by the voice, not by silent reading. Taking
-            # max() with readingMs here padded every subtitle by seconds of dead
-            # air (measured: 390s of holds against 208s of speech).
-            need = max(MIN_HOLD_MS, ms + PAD_MS)
+            # FR-013: the subtitle stays for the longer of reading time and speech + pad.
+            need = max(hold_ms(shown, theme), ms + pad)
             if step.get("holdMs") != need:
                 changed.append((sid, idx, step.get("holdMs"), need))
                 step["holdMs"] = need
-
-            lines.append({"sceneId": sid, "index": idx, "text": text,
-                          "file": rel, "durationMs": ms})
+            step["narrationMs"] = ms
+            lines.append({"sceneId": sid, "index": idx, "text": text, "file": rel, "durationMs": ms, "rateWpm": line_rate})
             idx += 1
 
-        # A scene must fit its narration end to end - voices do not overlap.
-        # Not the sum of holds: a sticky subtitle stays up across several visual
-        # beats, so holds overlap them rather than adding to the scene.
-        mine = [l for l in lines if l["sceneId"] == sid]
-        spoken = sum(l["durationMs"] for l in mine)
-        floor = spoken + 300 * max(0, len(mine) - 1) + PAD_MS if mine else 0
-        if floor and scene.get("dwellMs") and scene["dwellMs"] < floor:
-            print(f"  {sid}: dwellMs {scene['dwellMs']}ms is under the {floor}ms "
-                  f"its narration needs ({len(mine)} lines) - raising", file=sys.stderr)
-            scene["dwellMs"] = floor
-
     if not lines:
-        die("no narratable subtitle steps found - add `steps` with action \"subtitle\"")
+        die("no narratable subtitle steps found")
+
+    # Scenes must fit their voice: refill dwellMs with the storyboard rules (holds + actions + density floor).
+    if version >= 2:
+        f, _ = validate(sb, demo_dir, theme=theme, fix=True)
+        for fx in f.fixes:
+            print(f"  {fx}")
+        if f.errors:
+            print("\n".join(f"warning [{e['rule']}] {e['where']}: {e['msg']}" for e in f.errors), file=sys.stderr)
 
     total = sum(l["durationMs"] for l in lines)
-    print(f"voice {voice} @ {rate}wpm  |  {len(lines)} lines  |  "
-          f"{total / 1000:.1f}s of speech  |  auto-prosody {'on' if auto else 'off'}")
+    print(f"{provider} {voice} @ {rate}wpm  |  {len(lines)} lines  |  {total / 1000:.1f}s of speech  |  auto-prosody {'on' if auto else 'off'}")
     for l in lines:
-        print(f'  {l["sceneId"]}[{l["index"]}] {l["durationMs"] / 1000:>5.2f}s  '
-              f'{spoken_text(l["text"])[:38]}')
+        print(f'  {l["sceneId"]}[{l["index"]}] {l["durationMs"] / 1000:>5.2f}s  {spoken_text(l["text"])[:38]}')
     for sid, i, notes in prosody:
         print(f'  prosody {sid}[{i}]: ' + ", ".join(notes))
     for sid, i, was, now in changed:
@@ -203,11 +194,9 @@ def main(argv=None):
     if args.dry_run:
         print("\n--dry-run: no audio written, storyboard untouched")
         return 0
-
     nar_out = demo_dir / f"narration-{name}.json"
-    common.dump_json(nar_out, {"voice": voice, "rate": rate, "padMs": PAD_MS, "lines": lines})
+    common.dump_json(nar_out, {"provider": provider, "voice": voice, "rate": rate, "padMs": pad, "lines": lines})
     common.dump_json(sb_path, sb)
-    print(f"\nwrote {len(lines)} clips to audio/ and {nar_out.name}, "
-          f"and updated storyboard timings")
-    print("re-render the affected scenes so the clips match the new holds")
+    print(f"\nwrote {len(lines)} clips to audio/ and {nar_out.name}, and updated storyboard timings")
+    print("re-render the affected scenes so the clips match the new holds (the hash cache does that)")
     return 0

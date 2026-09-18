@@ -24,7 +24,7 @@ STAGES = {
     "final": None,  # output/<name>.mp4, resolved from the storyboard
 }
 GATE_NAMES = {"survey": "G1", "scenario": "G2", "storyboard": "G3", "final": "G4"}
-MACHINE_FIELDS = {"holdMs", "dwellMs"}
+MACHINE_FIELDS = {"holdMs", "dwellMs", "narrationMs"}
 
 
 def state_path(demo_dir: Path) -> Path:
