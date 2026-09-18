@@ -87,9 +87,6 @@ class StylesSetTest(ProjectCase):
         self.assertIn("unknown key", err)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class NarrateTest(ProjectCase):
     def test_dry_run_estimates_and_refuses_when_off(self):
@@ -107,3 +104,7 @@ class NarrateTest(ProjectCase):
     def test_edge_text_strips_markup(self):
         self.assertEqual(tts.edge_text("기간을 바꾸면[[slnc 300]] [[emph +]]그래프[[emph -]]가 갱신됩니다"), "기간을 바꾸면, 그래프가 갱신됩니다")
         self.assertEqual(tts.spoken_text("[[rate 120]]오류 3건"), "오류 3건")
+
+
+if __name__ == "__main__":
+    unittest.main()

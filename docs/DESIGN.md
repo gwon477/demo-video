@@ -498,11 +498,11 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 
 **M4. 나레이션 이식성과 절차 문서 마감**
 
-- [ ] TTS 프로바이더 추상화 (`say`, `edge-tts`, `none`), `narrate` 이식
-- [ ] `check-sync`를 새 스키마에 맞춰 갱신
-- [ ] references 정리, `feedback.md` 라우팅 표, SKILL.md 200줄 이내로 압축
-- [ ] SKILL.md에 게이트별 "사용자에게 보여줄 것과 물을 것" 문구 명시
-- 완료 기준: Claude Code와 Codex에서 같은 요청으로 끝까지 진행되고, 네 게이트에서 모두 멈춘다 (SC-005).
+- [x] TTS 프로바이더 추상화 (`say`, `edge-tts`, `none`), `narrate` v2 (2026-09-18: `lib/tts.py`, config.narration.provider, theme rate 150/120, FR-013 hold, `narrationMs`, validate로 dwell 재계산)
+- [x] `check-sync`를 새 스키마에 맞춰 갱신 (M2에서 완료)
+- [x] references 정리, `feedback.md` 라우팅 표, SKILL.md 189줄
+- [x] SKILL.md에 게이트별 "보여줄 것 / 물을 것" 문구 명시
+- [ ] 완료 기준: Claude Code와 Codex에서 같은 요청으로 끝까지 진행되고, 네 게이트에서 모두 멈춘다 (SC-005). Codex 교차 검증은 팀 배포 후 M5에서 수행
 
 **M5. 팀 파일럿**
 
