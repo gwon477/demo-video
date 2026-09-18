@@ -37,7 +37,7 @@
 | 항목 | 결정 | 근거 |
 | --- | --- | --- |
 | 배포 형태 | Agent Skills 표준 SKILL.md + Claude Code 플러그인 매니페스트 + AGENTS.md 폴백 | 승인 게이트가 있는 절차이고 작업 대상이 전부 로컬이다. 같은 파일이 Claude Code, Codex, Grok Build에서 읽힌다 |
-| 저장소 | 개인 GitHub 비공개 저장소, 팀원은 collaborator | 사내 정보는 저장소에 넣지 않고 팀원 로컬 설정으로 분리 |
+| 저장소 | 개인 GitHub 공개 저장소 (2026-09-18 공개 전환) | 사내 정보는 저장소에 넣지 않고 팀원 로컬 설정으로 분리. 설치에 로그인이 필요 없다 |
 | 브라우저 조작·녹화 | playwright-cli, `page.screencast.*` | 초안에서 검증됨 |
 | 자막·효과 렌더 | 브라우저 오버레이 | ffmpeg 빌드에 libass가 없어도 동작한다. 추가 의존성 없음 |
 | 합성 | ffmpeg (결합, 페이드, 오디오 mux, 트랜스코딩만) | 텍스트 필터에 의존하지 않는다 |
@@ -438,7 +438,7 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 "이 프로젝트 데모 영상 만들어줘. 앱은 http://localhost:3000 에 떠 있어."
 ```
 
-비공개 저장소는 `curl | bash` 방식이 인증 때문에 막히므로 clone 후 실행으로 통일한다. Claude Code만 쓰는 팀원은 `/plugin marketplace add <owner>/demo-video` 경로도 쓸 수 있고, README 하단에 대안으로만 적는다.
+공개 저장소지만 clone 후 실행으로 통일한다(업데이트 경로가 같아진다). Claude Code만 쓰는 팀원은 `/plugin marketplace add <owner>/demo-video` 경로도 쓸 수 있고, README 하단에 대안으로만 적는다.
 
 **버전 관리**
 

@@ -1,5 +1,5 @@
 # demo-video skill installer (Windows PowerShell). Idempotent: run again to update.
-#   git clone git@github.com:gwon477/demo-video.git $HOME\.agent-skills\demo-video; & $HOME\.agent-skills\demo-video\install.ps1
+#   git clone https://github.com/gwon477/demo-video.git $HOME\.agent-skills\demo-video; & $HOME\.agent-skills\demo-video\install.ps1
 $ErrorActionPreference = "Stop"
 $RepoDir = if ($env:DEMO_VIDEO_HOME) { $env:DEMO_VIDEO_HOME } else { Join-Path $HOME ".agent-skills\demo-video" }
 $SelfDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -8,7 +8,7 @@ $Targets = @((Join-Path $HOME ".claude\skills\demo-video"), (Join-Path $HOME ".a
 
 if ($SelfDir -ne $RepoDir -and -not (Test-Path (Join-Path $RepoDir ".git"))) {
   Write-Host "cloning into $RepoDir"
-  git clone git@github.com:gwon477/demo-video.git $RepoDir
+  git clone https://github.com/gwon477/demo-video.git $RepoDir
 } elseif (Test-Path (Join-Path $RepoDir ".git")) {
   Write-Host "updating $RepoDir"
   git -C $RepoDir pull --ff-only

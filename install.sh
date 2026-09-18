@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # demo-video skill installer (macOS / Linux). Idempotent: run again to update.
-#   git clone git@github.com:gwon477/demo-video.git ~/.agent-skills/demo-video && ~/.agent-skills/demo-video/install.sh
+#   git clone https://github.com/gwon477/demo-video.git ~/.agent-skills/demo-video && ~/.agent-skills/demo-video/install.sh
 set -euo pipefail
 
 REPO_DIR="${DEMO_VIDEO_HOME:-$HOME/.agent-skills/demo-video}"
@@ -11,7 +11,7 @@ TARGETS=("$HOME/.claude/skills/demo-video" "$HOME/.agents/skills/demo-video")
 # 1. clone or update
 if [ "$SELF_DIR" != "$REPO_DIR" ] && [ ! -d "$REPO_DIR/.git" ]; then
   echo "cloning into $REPO_DIR"
-  git clone "$(git -C "$SELF_DIR" remote get-url origin 2>/dev/null || echo git@github.com:gwon477/demo-video.git)" "$REPO_DIR"
+  git clone "$(git -C "$SELF_DIR" remote get-url origin 2>/dev/null || echo https://github.com/gwon477/demo-video.git)" "$REPO_DIR"
 elif [ -d "$REPO_DIR/.git" ]; then
   echo "updating $REPO_DIR"
   git -C "$REPO_DIR" pull --ff-only || echo "warning: could not pull (offline or no credentials) - installing the checkout as is"

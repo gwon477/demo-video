@@ -2,18 +2,18 @@
 
 실행 중인 웹앱을 읽고 조작하며 녹화해 데모 영상(mp4)을 만드는 Agent Skill. Claude Code, Codex CLI, Grok Build에서 같은 파일을 읽습니다. 조사 → 콘티 → 상세 설계 → 렌더 → 합성 → 레드팀 검토 순서로 진행하며, 네 곳(핵심 기능, 콘티, 상세 설계, 최종본)에서 사용자 승인을 받습니다.
 
-## 설치 (비공개 저장소: GitHub 로그인 또는 SSH 키 필요)
+## 설치
 
 macOS / Linux
 
 ```bash
-git clone git@github.com:gwon477/demo-video.git ~/.agent-skills/demo-video && ~/.agent-skills/demo-video/install.sh
+git clone https://github.com/gwon477/demo-video.git ~/.agent-skills/demo-video && ~/.agent-skills/demo-video/install.sh
 ```
 
 Windows (PowerShell, 개발자 모드가 꺼져 있으면 링크 대신 복사)
 
 ```powershell
-git clone git@github.com:gwon477/demo-video.git $HOME\.agent-skills\demo-video; & $HOME\.agent-skills\demo-video\install.ps1
+git clone https://github.com/gwon477/demo-video.git $HOME\.agent-skills\demo-video; & $HOME\.agent-skills\demo-video\install.ps1
 ```
 
 설치 스크립트는 `~/.claude/skills/demo-video`와 `~/.agents/skills/demo-video`에 링크를 걸고 `dv.py doctor`를 실행해 부족한 도구를 알려줍니다. 필요한 것: Python 3.10+, Node 18+, `npm install -g @playwright/cli`, ffmpeg. 나레이션은 macOS `say` 또는 `pip install edge-tts`.
@@ -47,4 +47,4 @@ tests/                 unittest (python3 -m unittest, tests/ 에서 실행)
 docs/                  DESIGN.md (설계·구현 문서), PD-STANDARDS.md (수치 근거)
 ```
 
-설계와 규칙 번호(FR-xxx)는 `docs/DESIGN.md`에 있습니다. 저장소에는 사내 URL, 계정, 제품 화면을 넣지 않습니다.
+설계와 규칙 번호(FR-xxx)는 `docs/DESIGN.md`에 있습니다. 공개 저장소이므로 사내 URL, 계정, 제품 화면은 넣지 않습니다. 데모 산출물(`demo/`)은 각자의 프로젝트에 남습니다.
