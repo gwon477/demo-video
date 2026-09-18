@@ -1,0 +1,8 @@
+{
+  "name": "demo-video",
+  "version": "0.1.0",
+  "description": "실행 중인 웹앱을 조사·콘티·승인 게이트를 거쳐 자막·효과가 들어간 데모 영상(mp4)으로 만드는 스킬",
+  "author": { "name": "gwon477" },
+  "homepage": "https://github.com/gwon477/demo-video",
+  "skills": ["./skills/demo-video"]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "gwon477-skills",
+  "owner": { "name": "gwon477" },
+  "plugins": [
+    {
+      "name": "demo-video",
+      "source": "./",
+      "description": "실행 중인 웹앱의 데모 영상을 만드는 스킬 (조사 → 콘티 → 상세 설계 → 렌더 → 합성 → 검토, 네 승인 게이트)"
+    }
+  ]
+}
