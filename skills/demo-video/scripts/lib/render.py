@@ -266,7 +266,7 @@ def main(argv=None):
         common.die("not in storyboard: " + ", ".join(unknown))
 
     # Bodies: generated unless a hand-written one (no marker) exists.
-    bodies, missing = {}, []
+    bodies, missing, stale = {}, [], []
     body_dir = demo_dir / "scenes"
     for sid in wanted:
         p = body_dir / f"{sid}.body.js"
@@ -279,9 +279,20 @@ def main(argv=None):
         elif existing is None:
             missing.append(common.rel(p, project))
         else:
+            # Hand-written: it must have been written for the scene as it is now.
+            if version >= 2 and sid in by_id and by_id[sid].get("steps"):
+                now, was = bodygen.scene_hash(by_id[sid]), bodygen.body_scene_mark(existing)
+                if was is None:
+                    print(f"warning: {sid}: hand-written body has no @scene marker - add `{bodygen.SCENE_MARK}{now}` "
+                          f"after checking it matches the storyboard", file=sys.stderr)
+                elif was != now:
+                    stale.append(f"{sid}: storyboard scene changed since the body was written (@scene {was}, now {now}) - "
+                                 f"update the body or regenerate it with `dv.py body {sid} --hand`, then set the marker")
             bodies[sid] = existing
     if missing:
         common.die("scene bodies not written yet:\n  " + "\n  ".join(missing))
+    if stale:
+        common.die("hand-written bodies out of date:\n  " + "\n  ".join(stale))
 
     jobs, cached = [], []
     for sid in wanted:

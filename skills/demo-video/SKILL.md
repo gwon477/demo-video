@@ -95,7 +95,7 @@ python3 <skill>/scripts/dv.py sheet --capture     # demo/sheet.html: screenshots
 
 Intro and outro come from the user when they have videos (`init --intro/--outro`). Otherwise design them from the product's own identity: `dv.py brand probe` reads the logo, colors, font and name from the running app into `demo/brand.json` (confirm the values), `dv.py cards` writes four HTML designs into `demo/assets/` and a gallery `demo/cards.png`; show it, take the pick or the requested changes (edit the HTML), then `dv.py cards --apply <variant>`. Never ship the neutral bundled card without offering this.
 
-Styling is a choice the user makes, not the model: before or during G3 run `dv.py styles` (subtitle and highlight presets drawn on a real screenshot of this app, `demo/styles.png`), show it, and apply the pick with `dv.py styles --apply subtitle=<name>,highlight=<name>` - it writes `demo/theme.json`, which every later render uses. Skip it only if the user says the defaults are fine.
+Styling is a choice the user makes, not the model: before or during G3 run `dv.py styles` (subtitle and highlight presets drawn on a real screenshot of this app, `demo/styles.png`), show it, and apply the pick with `dv.py styles --apply subtitle=<name>,highlight=<name>` - it writes `demo/theme.json`, which every later render uses. Values outside the presets go in with `dv.py styles --set subtitle.color=#fff,highlight.borderPx=3` (any key of `assets/theme.json`), then `dv.py styles` again to preview. Skip it only if the user says the defaults are fine.
 
 Fix the storyboard until `validate` passes - never argue with a rule. Show `sheet.html`, the interaction decisions and any `blocked` items to the user and stop: G3. Edits are cheap here and expensive after rendering.
 
@@ -117,7 +117,7 @@ This must run before phase 4 - rendering first means re-rendering. Rules, the ov
 
 One scene, one `.webm`. Separate files are what make transitions and re-cuts possible - never record the whole demo as a single clip.
 
-`render` generates one body per scene from the storyboard (`demo/scenes/<id>.body.js`, marked `// @generated`) and records it. Write a body by hand only for logic the action list cannot express - remove the marker line and it is kept.
+`render` generates one body per scene from the storyboard (`demo/scenes/<id>.body.js`, marked `// @generated`) and records it. Write a body by hand only for logic the action list cannot express: `dv.py body <scene> --hand` writes the same statements without the marker plus a `// @scene <hash>` line; edit it, keep the subtitle statements. When the storyboard scene changes later, `render` refuses until you reconcile the body and run `dv.py body <scene> --mark`. `sheet --capture` runs a body's setup part too, so hand-written scenes screenshot as they will record.
 
 ```bash
 python3 <skill>/scripts/dv.py render --close

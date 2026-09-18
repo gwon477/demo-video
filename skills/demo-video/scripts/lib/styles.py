@@ -59,7 +59,10 @@ def build_gallery(theme, presets, shot: Path, box, text, emphasis, w, h, compact
     esc = html.escape
     for kind, title in (("subtitle", "자막 스타일"), ("highlight", "강조 박스 스타일")):
         cards.append(f"<h2>{title}</h2><div class='grid'>")
-        for key, pr in presets[kind].items():
+        items = dict(presets[kind])
+        if theme.get("presets", {}).get("custom") or theme.get("presets", {}).get(kind):
+            items = {"current": {"label": "현재 프로젝트 설정", "desc": "demo/theme.json", "theme": {}}, **items}
+        for key, pr in items.items():
             t = json.loads(json.dumps(theme))
             t[kind].update(pr["theme"])
             inner = esc(text)
@@ -112,6 +115,7 @@ def main(argv=None):
     ap.add_argument("--text", default="케이스를 질의 패널로 끌어 놓으면 참조로 잡힙니다")
     ap.add_argument("--emphasis", default="끌어 놓으면")
     ap.add_argument("--apply", default=None, help="subtitle=<preset>,highlight=<preset>")
+    ap.add_argument("--set", default=None, help="custom values, e.g. subtitle.color=#fff,subtitle.fontSizeRatio=0.04,highlight.color=#e8542b")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--no-shot", action="store_true", help="write styles.html only")
     ap.add_argument("--compact", action="store_true", help="only the subtitle band / the area around the box")
@@ -125,6 +129,29 @@ def main(argv=None):
             print(kind)
             for k, v in presets[kind].items():
                 print(f"  {k:<10} {v['label']:<16} {v['desc']}")
+        return 0
+
+    if args.set:
+        tp = demo_dir / "theme.json"
+        project_theme = common.load_json(tp) if tp.exists() else {}
+        bundled = common.load_json(common.ASSETS_DIR / "theme.json")
+        for part in args.set.split(","):
+            key, _, value = part.strip().partition("=")
+            section, _, name = key.partition(".")
+            if section not in ("subtitle", "highlight", "zoom", "cursor", "click", "transition") or not name:
+                common.die(f"'{key}': use <subtitle|highlight|zoom|cursor|click|transition>.<key>=<value>")
+            if name not in bundled.get(section, {}):
+                common.die(f"'{key}': unknown key. Known: {', '.join(bundled[section])}")
+            ref = bundled[section][name]
+            try:
+                cast = (float(value) if isinstance(ref, float) else int(value) if isinstance(ref, int) and not isinstance(ref, bool)
+                        else value.lower() == "true" if isinstance(ref, bool) else value)
+            except ValueError:
+                common.die(f"'{key}': expected a {type(ref).__name__}")
+            project_theme.setdefault(section, {})[name] = cast
+        project_theme.setdefault("presets", {})["custom"] = True
+        common.dump_json(tp, project_theme)
+        print(f"wrote {common.rel(tp, project)} - re-run `dv.py styles` to preview, render re-records every scene")
         return 0
 
     if args.apply:

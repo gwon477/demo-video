@@ -17,31 +17,34 @@ from pathlib import Path
 
 from . import common
 
-CAPTURE_JS = """async page => {
-  const out = {};
-  const scenes = %(scenes)s;
-  await page.setViewportSize({ width: %(w)d, height: %(h)d });
-  for (const sc of scenes) {
-    try {
-      await page.goto(%(base)s + sc.url, { waitUntil: 'networkidle' });
-      if (sc.waitFor) await page.locator(sc.waitFor).first().waitFor({ timeout: 15000 });
-      await page.screenshot({ path: sc.shot, fullPage: false });
-      const boxes = {};
-      for (const sel of sc.targets) {
-        try {
-          // Targets that only exist after an action (a dialog, an answer) are simply not boxed.
-          const b = await page.locator(sel).first().boundingBox({ timeout: 1500 });
-          if (b) boxes[sel] = b;
-        } catch (e) { boxes[sel] = null; }
-      }
-      out[sc.id] = { ok: true, boxes };
-    } catch (e) {
-      out[sc.id] = { ok: false, error: String(e).split('\\n')[0] };
-    }
-  }
-  return JSON.stringify(out);
-}
-"""
+def capture_script(scene, body, *, prelude, project_prelude, base, accounts, theme, w, h, shot_rel, targets):
+    """Run the body's off-camera setup (everything above // ---record---), then screenshot and measure targets."""
+    from .render import RECORD_MARK
+    parts = RECORD_MARK.split(body, maxsplit=1)
+    setup = parts[0] if len(parts) == 2 else body.split("await subtitleSpan")[0]
+    return (
+        "async page => {\n"
+        f"const BASE = {json.dumps(base)};\n"
+        f"const ACCOUNTS = {json.dumps(accounts, ensure_ascii=False)};\n"
+        "const HOLD = []; const DWELL = 0;\n"
+        f"const THEME = {json.dumps(theme, ensure_ascii=False)};\n"
+        f"const FRAME = {{ width: {w}, height: {h} }};\n"
+        "const __cues = []; const __marks = []; let __t0 = Date.now();\n"
+        f"{prelude}\n{project_prelude}\n"
+        f"await page.setViewportSize({{ width: {w}, height: {h} }});\n"
+        "try {\n"
+        f"{setup}\n"
+        "  await page.waitForTimeout(400);\n"
+        f"  await page.screenshot({{ path: {json.dumps(shot_rel)}, fullPage: false }});\n"
+        "  const boxes = {};\n"
+        f"  for (const sel of {json.dumps(targets, ensure_ascii=False)}) {{\n"
+        "    try { const b = await page.locator(sel).first().boundingBox({ timeout: 1500 }); if (b) boxes[sel] = b; } catch (e) { boxes[sel] = null; }\n"
+        "  }\n"
+        "  return JSON.stringify({ ok: true, boxes });\n"
+        "} catch (e) { return JSON.stringify({ ok: false, error: String(e).split('\\n')[0] }); }\n"
+        "}\n"
+    )
+
 
 CSS = """
 body{font-family:-apple-system,'Apple SD Gothic Neo','Pretendard',sans-serif;background:#f1f5f9;color:#0f172a;margin:0;padding:24px}
@@ -88,10 +91,21 @@ def action_label(a):
 
 
 def capture(sb, demo_dir: Path, shots_dir: Path):
+    """One screenshot per scene after the scene's own setup, so hand-written scenes (login, stubs) look like the clip."""
+    from . import bodygen
+    from .render import PRELUDE
     project = demo_dir.parent
     w, h = common.frame_size(sb)
     base = common.base_url(sb, demo_dir)
-    plan = []
+    theme = common.load_theme(demo_dir)
+    prelude = PRELUDE.read_text(encoding="utf-8")
+    pp = demo_dir / "prelude.js"
+    project_prelude = pp.read_text(encoding="utf-8") if pp.exists() else ""
+    acc = demo_dir / ".accounts.json"
+    accounts = common.load_json(acc) if acc.exists() else {}
+    build_dir = shots_dir / ".build"
+    build_dir.mkdir(parents=True, exist_ok=True)
+    scripts = {}
     for sc in sb["scenes"]:
         targets = []
         for st in sc["steps"]:
@@ -100,23 +114,31 @@ def capture(sb, demo_dir: Path, shots_dir: Path):
                     v = a.get(k)
                     if v and v not in ("window", "document") and v not in targets:
                         targets.append(v)
-        plan.append({"id": sc["id"], "url": sc["url"], "waitFor": sc.get("waitFor"),
-                     "shot": common.rel(shots_dir / f"{sc['id']}.png", project), "targets": targets})
-    script = CAPTURE_JS % {"scenes": json.dumps(plan, ensure_ascii=False), "w": w, "h": h, "base": json.dumps(base)}
-    build = shots_dir / ".capture.js"
-    build.write_text(script, encoding="utf-8")
-    r = subprocess.run(["playwright-cli", "open"], cwd=str(project), capture_output=True, text=True)
+        body_p = demo_dir / "scenes" / f"{sc['id']}.body.js"
+        existing = body_p.read_text(encoding="utf-8") if body_p.exists() else None
+        body = existing if (existing and not bodygen.is_generated(existing)) else bodygen.scene_body(sc)
+        script = capture_script(sc, body, prelude=prelude, project_prelude=project_prelude, base=base, accounts=accounts,
+                                theme=theme, w=w, h=h, shot_rel=common.rel(shots_dir / f"{sc['id']}.png", project), targets=targets)
+        f = build_dir / f"{sc['id']}.js"
+        f.write_text(script, encoding="utf-8")
+        scripts[sc["id"]] = f
+    chk = subprocess.run(["node", "--check", *map(str, scripts.values())], capture_output=True, text=True)
+    if chk.returncode != 0:
+        common.die("capture script has a syntax error:\n" + chk.stderr.strip()[-400:])
+    r = subprocess.run(["playwright-cli", "-s=dv-sheet", "open"], cwd=str(project), capture_output=True, text=True)
     if r.returncode != 0:
         common.die("playwright-cli open failed:\n" + (r.stderr or r.stdout).strip())
-    r = subprocess.run(["playwright-cli", "run-code", "--filename", common.rel(build, project), "--raw"],
-                       cwd=str(project), capture_output=True, text=True)
-    subprocess.run(["playwright-cli", "close"], cwd=str(project), capture_output=True, text=True)
-    if r.returncode != 0:
-        common.die("capture failed:\n" + (r.stderr or r.stdout).strip()[-600:])
+    result = {}
     try:
-        result = json.loads(json.loads(r.stdout.strip()))
-    except (ValueError, TypeError):
-        common.die("capture returned no result")
+        for sid, f in scripts.items():
+            r = subprocess.run(["playwright-cli", "-s=dv-sheet", "run-code", "--filename", common.rel(f, project), "--raw"],
+                               cwd=str(project), capture_output=True, text=True)
+            try:
+                result[sid] = json.loads(json.loads(r.stdout.strip()))
+            except (ValueError, TypeError):
+                result[sid] = {"ok": False, "error": (r.stderr or r.stdout).strip().splitlines()[-1:] or ["no result"]}
+    finally:
+        subprocess.run(["playwright-cli", "-s=dv-sheet", "close"], cwd=str(project), capture_output=True, text=True)
     for sid, info in result.items():
         if info.get("ok"):
             common.dump_json(shots_dir / f"{sid}.boxes.json", info["boxes"])
