@@ -376,6 +376,7 @@ flowchart TD
 | `init` | 인테이크 답 → `config.json`, `state.json` | `demo/` 골격 생성, `.gitignore`에 `demo/scenes/*.webm`, `demo/output/`, 인증 상태 파일 추가 | 앱 URL 접속 불가 |
 | `survey shots` | survey의 라우트 목록 → 스크린샷, 접근성 스냅샷 | 코드 분석은 에이전트가 하고, 이 명령은 화면 순회의 반복 작업만 맡는다. 로그인 상태를 `demo/.auth/state.json`에 저장해 재사용 | 라우트 절반 이상 실패 |
 | `validate [--fix]` | storyboard → 검증 결과 | 스키마, 액션 타입, 자막 길이(FR-012), 노출 시간(FR-013), 줌 규칙(FR-020~022), 로케이터가 survey에 있는지, show 상호작용에 대응 액션이 있는지(FR-062), evidence의 소스·화면 근거가 둘 다 채워졌는지. `--fix`는 hold/dwell만 채운다 | 규칙 위반 1건 이상 |
+| `styles` | 프리셋 + 스크린샷 → `demo/styles.png`, `--apply` → `demo/theme.json` | 자막 5종·강조 박스 5종 프리셋(`assets/styles/presets.json`)을 prelude와 같은 CSS로 실제 화면 위에 그려 사용자가 고르게 한다. 선택은 프로젝트 테마(`demo/theme.json`)에 저장되고 번들·사용자 테마 위에 덮인다 | 프리셋 이름 오류 |
 | `sheet` | storyboard + 스크린샷 → `sheet.html` | 스텝마다 스크린샷에 자막과 줌 영역을 그려 한 페이지로 만든다. 렌더 없이 수 초 안에 끝난다 | validate 미통과 |
 | `approve <stage>` | 파일 → `state.json` | 승인 시점의 해시 기록 | 대상 파일 없음 |
 | `narrate [--dry-run]` | storyboard → 음성 파일, `narration.json` | 절 경계 쉼, 숫자·오류 문구 감속, 강조어 처리. hold/dwell 확장을 storyboard에 다시 쓴다 | TTS 프로바이더 없음 |

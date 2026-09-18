@@ -73,9 +73,11 @@ function subtitleHtml(text, emphasis) {
     <style>@keyframes subIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1}}</style>
     <div style="position:absolute;left:50%;bottom:${Math.round(FRAME.height * T.subtitle.bottomRatio)}px;
       transform:translateX(-50%);max-width:${Math.round(T.subtitle.maxWidthRatio * 100)}%;padding:${Math.round(SUB_FONT_PX * 0.35)}px ${Math.round(SUB_FONT_PX * 0.7)}px;
-      background:${T.subtitle.background};border-radius:${T.subtitle.radius}px;box-shadow:0 4px 18px rgba(0,0,0,.22);
-      color:${T.subtitle.color};font-family:${FONT};font-size:${SUB_FONT_PX}px;font-weight:600;line-height:1.25;
-      text-align:center;letter-spacing:-.2px;white-space:nowrap;animation:subIn .24s ease-out;">${inner}</div>`;
+      background:${T.subtitle.background};border-radius:${T.subtitle.radius}px;box-shadow:${T.subtitle.shadow ?? 'none'};
+      border:${T.subtitle.border ?? 'none'};border-left:${T.subtitle.borderLeft && T.subtitle.borderLeft !== 'none' ? T.subtitle.borderLeft : (T.subtitle.border ?? 'none')};
+      color:${T.subtitle.color};font-family:${FONT};font-size:${SUB_FONT_PX}px;font-weight:${T.subtitle.fontWeight ?? 600};line-height:1.25;
+      text-shadow:${T.subtitle.textShadow ?? 'none'};text-align:center;letter-spacing:${T.subtitle.letterSpacing ?? '-.2px'};
+      white-space:nowrap;animation:subIn .24s ease-out;">${inner}</div>`;
 }
 
 // No holdMs -> sticky, caller disposes. With holdMs -> self-removes and blocks.
@@ -242,10 +244,24 @@ async function highlight(target, opts = {}) {
     ? `<div style="position:absolute;top:${b.y + b.height + 10}px;left:${b.x + b.width / 2}px;transform:translateX(-50%);
         padding:8px 14px;background:${T.highlight.color};border-radius:10px;color:#fff;font-family:${FONT};
         font-size:16px;font-weight:600;white-space:nowrap;">${opts.label}</div>` : '';
-  await overlay(`
-    <div style="position:absolute;left:${b.x - pad}px;top:${b.y - pad}px;width:${b.width + pad * 2}px;height:${b.height + pad * 2}px;
-      border-radius:8px;border:${T.highlight.borderPx}px solid ${T.highlight.color};
-      box-shadow:0 0 0 9999px ${opts.dim === false ? 'transparent' : T.highlight.dim};"></div>${label}`, ms);
+  const H = T.highlight;
+  const dim = opts.dim === false ? 'transparent' : (H.dim ?? 'transparent');
+  const glow = H.glow && H.glow !== 'none' ? `, ${H.glow}` : '';
+  const x = b.x - pad, y = b.y - pad, w = b.width + pad * 2, h = b.height + pad * 2;
+  let box;
+  if (H.corners) {
+    // Four corner brackets instead of a full border; the dim (if any) still surrounds the box.
+    const L = Math.max(14, Math.round(Math.min(w, h) * 0.18)), bw = H.borderPx, c = H.color;
+    const corner = (l, t, bt, br) => `<div style="position:absolute;left:${l}px;top:${t}px;width:${L}px;height:${L}px;
+      border-top:${bt ? bw : 0}px solid ${c};border-bottom:${bt ? 0 : bw}px solid ${c};border-left:${br ? 0 : bw}px solid ${c};border-right:${br ? bw : 0}px solid ${c};"></div>`;
+    box = `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;box-shadow:0 0 0 9999px ${dim}${glow};"></div>`
+      + corner(x, y, true, false) + corner(x + w - L, y, true, true) + corner(x, y + h - L, false, false) + corner(x + w - L, y + h - L, false, true);
+  } else {
+    box = `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;
+      border-radius:${H.radius ?? 8}px;border:${H.borderPx}px ${H.style ?? 'solid'} ${H.color};
+      box-shadow:0 0 0 9999px ${dim}${glow};"></div>`;
+  }
+  await overlay(box + label, ms);
   return ms;
 }
 

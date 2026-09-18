@@ -76,7 +76,7 @@ def main(argv=None):
     sb = common.load_json(sb_path)
     root = sb_path.parent
     version = common.schema_version(sb)
-    theme = common.load_theme()
+    theme = common.load_theme(root)
     manifest_p = root / ("manifest-draft.json" if args.draft else "manifest.json")
     if not manifest_p.exists():
         common.die(f"no {manifest_p.name} - run dv.py compose first")

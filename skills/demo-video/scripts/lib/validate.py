@@ -412,7 +412,7 @@ def main(argv=None):
 
     sb_path = common.storyboard_path(args.storyboard)
     sb = common.load_json(sb_path)
-    f, est = validate(sb, sb_path.parent, fix=args.fix)
+    f, est = validate(sb, sb_path.parent, theme=common.load_theme(sb_path.parent), fix=args.fix)
     if args.fix and f.fixes:
         common.dump_json(sb_path, sb)
 

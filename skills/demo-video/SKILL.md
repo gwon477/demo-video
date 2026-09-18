@@ -93,6 +93,8 @@ python3 <skill>/scripts/dv.py validate --fix      # fills holdMs/dwellMs, exit 1
 python3 <skill>/scripts/dv.py sheet --capture     # demo/sheet.html: screenshots, subtitles, target boxes, interaction badges
 ```
 
+Styling is a choice the user makes, not the model: before or during G3 run `dv.py styles` (subtitle and highlight presets drawn on a real screenshot of this app, `demo/styles.png`), show it, and apply the pick with `dv.py styles --apply subtitle=<name>,highlight=<name>` - it writes `demo/theme.json`, which every later render uses. Skip it only if the user says the defaults are fine.
+
 Fix the storyboard until `validate` passes - never argue with a rule. Show `sheet.html`, the interaction decisions and any `blocked` items to the user and stop: G3. Edits are cheap here and expensive after rendering.
 
 ## Phase 3.5 - Narration (only if the demo has voice-over)

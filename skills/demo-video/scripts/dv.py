@@ -13,6 +13,7 @@ Commands (more land per DESIGN.md section 7):
   approve      record the user's approval of survey | scenario | storyboard | final
   validate     enforce the storyboard schema and quality rules; --fix fills holdMs/dwellMs
   sheet        storyboard + screenshots -> demo/sheet.html for the G3 review
+  styles       subtitle/highlight presets drawn on a real frame; --apply writes demo/theme.json
   render       generate/assemble scene bodies with the prelude and record .webm clips (needs G3)
   check-sync   verify storyboard, bodies, narration and recorded cues agree
   compose      join clips with xfade transitions, mux narration/BGM, encode the mp4 once
@@ -37,6 +38,7 @@ COMMANDS = {
     "approve": "lib.approve",
     "validate": "lib.validate",
     "sheet": "lib.sheet",
+    "styles": "lib.styles",
     "render": "lib.render",
     "check-sync": "lib.checksync",
     "compose": "lib.compose",

@@ -201,7 +201,7 @@ def main(argv=None):
     f, _ = validate(sb, demo_dir)
     if f.errors:
         common.die(f"{len(f.errors)} validate error(s) - run dv.py validate first")
-    theme = common.load_theme()
+    theme = common.load_theme(demo_dir)
     shots_dir = demo_dir / "shots"
     shots_dir.mkdir(parents=True, exist_ok=True)
     if args.capture:

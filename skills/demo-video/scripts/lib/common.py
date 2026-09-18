@@ -70,11 +70,14 @@ def _deep_merge(base, over):
     return out
 
 
-def load_theme() -> dict:
-    """Bundled theme.json, overridden by the user's ~/.config/demo-video/theme.json."""
+def load_theme(demo_dir: Path = None) -> dict:
+    """Bundled theme.json, overridden by ~/.config/demo-video/theme.json, then by the project's demo/theme.json."""
     theme = load_json(ASSETS_DIR / "theme.json")
     if USER_THEME.exists():
         theme = _deep_merge(theme, load_json(USER_THEME))
+    project = (Path(demo_dir) if demo_dir else Path("demo")) / "theme.json"
+    if project.exists():
+        theme = _deep_merge(theme, load_json(project))
     return theme
 
 

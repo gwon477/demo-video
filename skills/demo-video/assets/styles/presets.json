@@ -1,0 +1,56 @@
+{
+  "subtitle": {
+    "classic": {
+      "label": "클래식 (현재)",
+      "desc": "반투명 검정 박스, 흰 글자, 강조어 하늘색",
+      "theme": { "background": "rgba(12,14,18,.62)", "color": "#ffffff", "emphasisColor": "#7dd3fc", "radius": 10, "fontWeight": 600, "border": "none", "shadow": "0 4px 18px rgba(0,0,0,.22)", "textShadow": "none", "letterSpacing": "-.2px" }
+    },
+    "solid": {
+      "label": "솔리드",
+      "desc": "불투명 짙은 남색 박스, 강조어 노랑. 밝은 화면에서 가장 또렷함",
+      "theme": { "background": "#0f172a", "color": "#ffffff", "emphasisColor": "#fde047", "radius": 6, "fontWeight": 700, "border": "none", "shadow": "0 6px 24px rgba(0,0,0,.35)", "textShadow": "none", "letterSpacing": "-.2px" }
+    },
+    "light": {
+      "label": "라이트",
+      "desc": "흰 박스에 검정 글자, 강조어 파랑. 어두운 앱 화면에 어울림",
+      "theme": { "background": "rgba(255,255,255,.94)", "color": "#0f172a", "emphasisColor": "#2563eb", "radius": 10, "fontWeight": 700, "border": "1px solid rgba(15,23,42,.12)", "shadow": "0 6px 24px rgba(0,0,0,.18)", "textShadow": "none", "letterSpacing": "-.2px" }
+    },
+    "outline": {
+      "label": "아웃라인",
+      "desc": "박스 없이 흰 글자에 검정 외곽선. 화면을 가장 덜 가림",
+      "theme": { "background": "transparent", "color": "#ffffff", "emphasisColor": "#7dd3fc", "radius": 0, "fontWeight": 800, "border": "none", "shadow": "none", "textShadow": "0 0 6px rgba(0,0,0,.9), 0 2px 2px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,1)", "letterSpacing": "0" }
+    },
+    "accent": {
+      "label": "액센트 바",
+      "desc": "검정 박스 왼쪽에 브랜드색 세로 바, 강조어 브랜드색",
+      "theme": { "background": "rgba(15,23,42,.88)", "color": "#ffffff", "emphasisColor": "#f97316", "radius": 4, "fontWeight": 600, "border": "none", "borderLeft": "6px solid #f97316", "shadow": "0 6px 24px rgba(0,0,0,.3)", "textShadow": "none", "letterSpacing": "-.2px" }
+    }
+  },
+  "highlight": {
+    "dim": {
+      "label": "딤 + 테두리 (현재)",
+      "desc": "대상 밖을 어둡게, 2px 파란 테두리",
+      "theme": { "color": "#0ea5e9", "borderPx": 2, "dim": "rgba(15,23,42,.35)", "radius": 8, "glow": "none", "corners": false, "style": "solid" }
+    },
+    "frame": {
+      "label": "프레임",
+      "desc": "딤 없이 3px 주황 테두리와 은은한 글로우. 화면 전체가 보임",
+      "theme": { "color": "#f97316", "borderPx": 3, "dim": "transparent", "radius": 8, "glow": "0 0 0 6px rgba(249,115,22,.22)", "corners": false, "style": "solid" }
+    },
+    "spotlight": {
+      "label": "스포트라이트",
+      "desc": "짙은 딤과 흰 테두리, 대상만 밝게",
+      "theme": { "color": "#ffffff", "borderPx": 2, "dim": "rgba(2,6,23,.55)", "radius": 10, "glow": "0 0 24px rgba(255,255,255,.35)", "corners": false, "style": "solid" }
+    },
+    "brackets": {
+      "label": "코너 브래킷",
+      "desc": "네 모서리 브래킷만 표시, 딤 없음. 문서·표에 어울림",
+      "theme": { "color": "#dc2626", "borderPx": 3, "dim": "transparent", "radius": 0, "glow": "none", "corners": true, "style": "solid" }
+    },
+    "dashed": {
+      "label": "점선",
+      "desc": "옅은 딤과 파란 점선 테두리",
+      "theme": { "color": "#2563eb", "borderPx": 2, "dim": "rgba(15,23,42,.18)", "radius": 6, "glow": "none", "corners": false, "style": "dashed" }
+    }
+  }
+}

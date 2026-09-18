@@ -227,7 +227,7 @@ def main(argv=None):
     state.require(demo_dir, "storyboard")     # G3 (DESIGN 4절)
     project = Path(args.cwd).resolve() if args.cwd else demo_dir.parent
     version = common.schema_version(sb)
-    theme = common.load_theme()
+    theme = common.load_theme(demo_dir)
     full_w, full_h = common.frame_size(sb)
     w, h = (DRAFT_WIDTH, int(round(DRAFT_WIDTH * full_h / full_w / 2) * 2)) if args.draft else (full_w, full_h)
     scenes_dir = demo_dir / "scenes" / "draft" if args.draft else demo_dir / "scenes"
