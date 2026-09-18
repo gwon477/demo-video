@@ -55,7 +55,7 @@ An interaction that *is* the feature (moving a card on a kanban board, connectin
 | `pan`, `wheelZoom` | drag or stepped wheel events on the canvas | never with page `zoom` |
 | `key` | key cap overlay bottom-left for 1s while the key is pressed (L3) | - |
 | `dblclick`, `rightClick` | two ripples / orange ripple | - |
-| `waitStream` | waits until the stream is done (`until: attr|text|stable`); over 15s the span is marked for speed-up in compose | `highlight` the result when done |
+| `waitStream` | waits until the stream is done (`until: attr|text|stable`); over 15s compose speeds up the middle of the span under a "▶▶ 배속" badge | `highlight` the result when done |
 
 ### Drag modes
 

@@ -196,6 +196,32 @@ class ComposeVerifyTest(ProjectCase):
         self.assertIn("CC BY 4.0", credits)
         self.assertTrue(any("CREDITS.txt" in n for n in self.read_json("demo/manifest.json")["notes"]))
 
+    def test_stream_span_is_sped_up_and_cues_remapped(self):
+        make_clip(self.scenes / "02-b.webm", 30.0)
+        self.write_json("demo/scenes/02-b.timing.json",
+                        {"sceneId": "02-b", "cues": [{"text": "둘째 자막", "startMs": 200, "endMs": 27000}],
+                         "marks": [{"type": "stream", "atMs": 1000, "startMs": 1000, "endMs": 25000, "speedup": True}]})
+        self.sb["scenes"][1]["steps"][0]["actions"] = [{"type": "waitStream", "target": "#x"}]
+        self.write_json("demo/storyboard.json", self.sb)
+        code, out, err = dv("compose", cwd=self.project)
+        self.assertEqual(code, 0, err)
+        m = self.read_json("demo/manifest.json")
+        plan = m["speedups"]["02-b"]
+        self.assertAlmostEqual(plan["a"], 3.5, delta=0.01)
+        self.assertAlmostEqual(plan["b"], 22.5, delta=0.01)
+        self.assertAlmostEqual(plan["factor"], 19 / 3, delta=0.05)
+        self.assertAlmostEqual(plan["saved"], 16.0, delta=0.1)
+        # 2 + 3 + (30 - 16) + 2 - 0.4 - 0.04 - 0.4
+        self.assertAlmostEqual(m["durationSec"], 21 - 0.84, delta=0.15)
+        r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                            str(self.demo / "output" / "syn.mp4")], capture_output=True, text=True)
+        self.assertAlmostEqual(float(r.stdout), m["durationSec"], delta=0.3)
+        srt = (self.demo / "output" / "syn.srt").read_text()
+        # the cue that ended at 27.0s local now ends at 27 - 16 = 11.0s local (+ scene start)
+        start_b = next(s["startSec"] for s in m["scenes"] if s["id"] == "02-b")
+        self.assertIn(f"00:00:{int(start_b + 11.0):02d}", srt.split("둘째 자막")[0].splitlines()[-1])
+        self.assertTrue(any("sped up" in n for n in m["notes"]))
+
     def test_draft_compose_uses_cuts_and_no_audio(self):
         make_tone(self.project / "tone.wav")
         dv("bgm", "probe", str(self.project / "tone.wav"), cwd=self.project)

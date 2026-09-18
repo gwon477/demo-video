@@ -104,7 +104,10 @@ def main(argv=None):
         planned = sc.get("dwellMs") or (sb.get(sc.get("kind"), {}) or {}).get("holdMs") if sc.get("kind") else sc.get("dwellMs")
         if sid in ("00-intro", "99-outro"):
             planned = (sb.get("intro" if sid == "00-intro" else "outro") or {}).get("holdMs")
-        if planned:
+        sped = (manifest.get("speedups") or {}).get(sid)
+        if sped:
+            rec["speedup"] = sped
+        if planned and not sped:
             rec["plannedSec"] = planned / 1000
             if dur > planned / 1000 + 1.5:
                 findings.append({"scene": sid, "kind": "timing", "severity": "warn",

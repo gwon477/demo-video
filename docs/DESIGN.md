@@ -309,7 +309,7 @@ flowchart TD
 | `pan`, `wheelZoom` | 캔버스 위에서 드래그 또는 휠 이벤트를 단계적으로 보낸다 | 없음. 페이지 `zoom`과 동시에 쓰지 않는다 |
 | `key` | 키 입력과 동시에 화면 하단 좌측에 키 캡 오버레이(예: ⌘ K)를 1초 표시 | L3 레이어에 그린다 |
 | `dblclick`, `rightClick` | 리플을 두 번 또는 다른 색으로 표시 | 없음 |
-| `waitStream` | 스트리밍이나 진행 상태가 끝나는 조건까지 기다린다. 15초를 넘으면 `stream` 마크를 남기고 `compose`가 보고한다. 구간 배속과 "배속" 표시는 M4 이후 과제다 | 완료 시점에 결과 `highlight` |
+| `waitStream` | 스트리밍이나 진행 상태가 끝나는 조건까지 기다린다. 15초를 넘으면 `stream` 마크를 남기고, `compose`가 구간의 앞뒤 2.5초를 남기고 가운데를 배속(목표 8초, 최대 16배)해 "▶▶ 배속" 배지를 얹는다. 배지는 브라우저로 그린 PNG를 `overlay`로 합성한다(텍스트 필터 불필요). 자막 큐와 srt는 배속에 맞춰 재계산된다 | 완료 시점에 결과 `highlight` |
 
 스크롤 중에도 자막은 L3에 고정되어 움직이지 않는다. 드래그 중 커서와 누름 표시는 L2라 줌과 함께 확대된다.
 
@@ -494,7 +494,7 @@ git clone git@github.com:<owner>/demo-video.git ~/.agent-skills/demo-video && ~/
 - [ ] 장면 해시 캐시, 드래프트 모드, 인증 상태 재사용, `--jobs`와 `mutates` 처리
 - [ ] `verify` 프레임 타일과 볼륨 측정, 나레이션 구간에서 음성이 BGM보다 충분히 큰지 확인
 - 완료 기준: SC-002와 SC-003을 샘플 앱에서 측정해 통과한다.
-- 2026-09-17 결과: 샘플 앱 9장면 54초 영상이 render 1분 2초(`--jobs 3`) + compose 3초 + verify 10초. 자막 한 줄 수정 후 render는 해당 장면 1개만 재녹화(`tests/test_m3_render.py`). 미구현: `waitStream` 15초 초과 구간 배속, BGM 카탈로그(`fetch/pick`), `CREDITS.txt`.
+- 2026-09-17 결과: 샘플 앱 9장면 54초 영상이 render 1분 2초(`--jobs 3`) + compose 3초 + verify 10초. 자막 한 줄 수정 후 render는 해당 장면 1개만 재녹화(`tests/test_m3_render.py`). 2026-09-18: `waitStream` 배속, BGM 카탈로그(`pick/use/fetch`), `CREDITS.txt` 구현 완료.
 
 **M4. 나레이션 이식성과 절차 문서 마감**
 

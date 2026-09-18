@@ -104,6 +104,60 @@ def merge_ranges(ranges, gap=0.4):
     return out
 
 
+def speedup_plan(timing, dur, theme):
+    """For a clip whose waitStream span exceeds the threshold: keep head/tail at 1x, compress the middle.
+    Returns None or {a, b, factor, saved} in seconds."""
+    st = theme["stream"]
+    spans = [m for m in (timing.get("marks") or []) if m.get("type") == "stream" and m.get("speedup")]
+    if not spans:
+        return None
+    m = spans[0]                                    # one streaming span per scene is the rule
+    s0, s1 = m["startMs"] / 1000, m["endMs"] / 1000
+    head, tail = st.get("headMs", 2500) / 1000, st.get("tailMs", 2500) / 1000
+    a, b = s0 + head, min(s1 - tail, dur - 0.2)
+    mid = b - a
+    if mid <= 1.0:
+        return None
+    target_mid = max(1.0, st.get("speedupTargetMs", 8000) / 1000 - head - tail)
+    factor = min(st.get("maxFactor", 16), max(2.0, mid / target_mid))
+    return {"a": a, "b": b, "factor": round(factor, 2), "saved": mid - mid / factor}
+
+
+def remap_local(t, plan):
+    """Clip-local time after the middle of the streaming span was compressed."""
+    if not plan or t <= plan["a"]:
+        return t
+    if t >= plan["b"]:
+        return t - plan["saved"]
+    return plan["a"] + (t - plan["a"]) / plan["factor"]
+
+
+def render_badge(text, out_png: Path, project: Path, theme, w, h):
+    """A '배속' badge PNG for ffmpeg overlay (no text filter needed). Cached by text."""
+    if out_png.exists():
+        return True
+    font_px = max(18, round(h * theme["subtitle"]["fontSizeRatio"] * 0.8))
+    html_p = out_png.with_suffix(".html")
+    html_p.write_text(f"""<!doctype html><html><head><meta charset="utf-8"><style>
+    html,body{{margin:0;background:transparent}}
+    .b{{display:inline-block;padding:{round(font_px*0.3)}px {round(font_px*0.7)}px;border-radius:999px;background:rgba(12,14,18,.78);
+        color:#fff;font:700 {font_px}px {theme['subtitle']['fontFamily']};letter-spacing:.02em;border:2px solid rgba(255,255,255,.55)}}
+    </style></head><body><span class="b">{text}</span></body></html>""", encoding="utf-8")
+    js = out_png.with_suffix(".js")
+    js.write_text(f"""async page => {{
+  await page.goto({json.dumps(html_p.resolve().as_uri())});
+  const el = await page.locator('.b');
+  await el.screenshot({{ path: {json.dumps(str(out_png))}, omitBackground: true }});
+  return 'ok';
+}}""", encoding="utf-8")
+    subprocess.run(["playwright-cli", "-s=dv-badge", "open"], cwd=str(project), capture_output=True, text=True)
+    r = subprocess.run(["playwright-cli", "-s=dv-badge", "run-code", "--filename", common.rel(js, project), "--raw"],
+                       cwd=str(project), capture_output=True, text=True)
+    subprocess.run(["playwright-cli", "-s=dv-badge", "close"], cwd=str(project), capture_output=True, text=True)
+    js.unlink(missing_ok=True)
+    return r.returncode == 0 and out_png.exists()
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="dv.py compose", description=__doc__.splitlines()[0])
     ap.add_argument("--storyboard", default=None)
@@ -216,6 +270,24 @@ def main(argv=None):
         if need and c["dur"] + 0.4 < need:
             print(f'warning: {c["scene"]["id"]} is {c["dur"]:.2f}s but its subtitles need {need:.2f}s', file=sys.stderr)
 
+    # ---- streaming spans over the threshold get their middle sped up (FR table, waitStream)
+    plans = {}
+    for c in clips:
+        timing = load_timing(scenes_dir, c["scene"]["id"])
+        plan = speedup_plan(timing, c["dur"], theme) if not args.draft else None
+        if plan:
+            plans[c["scene"]["id"]] = plan
+            c["dur"] = c["dur"] - plan["saved"]
+            notes.append(f"{c['scene']['id']}: streaming span sped up x{plan['factor']} between {plan['a']:.1f}s and {plan['b']:.1f}s "
+                         f"(saves {plan['saved']:.1f}s), '배속' badge shown")
+    badge_idx = None
+    if plans:
+        badge = build_dir / "badge-speedup.png"
+        if render_badge("▶▶ 배속", badge, root.parent, theme, w_target, h_target):
+            badge_idx = len(clips)
+        else:
+            notes.append("badge could not be rendered (no browser?) - speed-up applied without the '배속' badge")
+
     # ---- video graph
     parts, inputs = [], []
     for i, c in enumerate(clips):
@@ -229,7 +301,23 @@ def main(argv=None):
             if c["dur"] < hold - 0.08:
                 pad = f",tpad=stop_mode=clone:stop_duration={hold - c['dur']:.3f}"
                 c["dur"] = hold
-        parts.append(f"[{i}:v]fps={FPS},format=yuv420p,setsar=1,scale={w}:{h}{pad}[s{i}]")
+        plan = plans.get(c["scene"]["id"])
+        if not plan:
+            parts.append(f"[{i}:v]fps={FPS},format=yuv420p,setsar=1,scale={w}:{h}{pad},settb=AVTB[s{i}]")
+            continue
+        a, b, f = plan["a"], plan["b"], plan["factor"]
+        parts.append(f"[{i}:v]fps={FPS},format=yuv420p,setsar=1,scale={w}:{h},split=3[h{i}][m{i}][t{i}]")
+        parts.append(f"[h{i}]trim=0:{a:.3f},setpts=PTS-STARTPTS[h{i}b]")
+        parts.append(f"[m{i}]trim={a:.3f}:{b:.3f},setpts=(PTS-STARTPTS)/{f}[m{i}a]")
+        if badge_idx is not None:
+            parts.append(f"[m{i}a][{badge_idx}:v]overlay=x=W-w-{round(w * 0.03)}:y={round(h * 0.03)}:shortest=1,format=yuv420p,setsar=1[m{i}b]")
+        else:
+            parts.append(f"[m{i}a]copy[m{i}b]")
+        parts.append(f"[t{i}]trim=start={b:.3f},setpts=PTS-STARTPTS[t{i}b]")
+        # concat resets the timebase; bring it back to what the other clips carry so xfade accepts it
+        parts.append(f"[h{i}b][m{i}b][t{i}b]concat=n=3:v=1:a=0,fps={FPS},settb=AVTB,setpts=PTS-STARTPTS[s{i}]")
+    if badge_idx is not None:
+        inputs += ["-loop", "1", "-i", str(build_dir / "badge-speedup.png")]
     if len(clips) == 1:
         parts.append("[s0]copy[vout]")
     elif cut_only:
@@ -252,22 +340,17 @@ def main(argv=None):
         acc += clips[i - 1]["dur"] - trans[i - 1][1]
         starts.append(acc)
 
-    cues, stream_marks = [], []
+    cues = []
     for c, start in zip(clips, starts):
         timing = load_timing(scenes_dir, c["scene"]["id"])
+        plan = plans.get(c["scene"]["id"])
         for i, cue in enumerate(timing.get("cues") or []):
+            s_local = remap_local(cue["startMs"] / 1000, plan)
+            e_local = remap_local((cue.get("endMs") or cue["startMs"] + 2000) / 1000, plan)
             cues.append({"sceneId": c["scene"]["id"], "index": i,
-                         "startMs": int(start * 1000) + cue["startMs"],
-                         "endMs": int(start * 1000) + (cue.get("endMs") or cue["startMs"] + 2000),
+                         "startMs": int((start + s_local) * 1000), "endMs": int((start + e_local) * 1000),
                          "text": cue.get("text", "")})
-        for m in timing.get("marks") or []:
-            if m.get("type") == "stream" and m.get("speedup"):
-                stream_marks.append({"sceneId": c["scene"]["id"], "startMs": int(start * 1000) + m["startMs"],
-                                     "endMs": int(start * 1000) + m["endMs"]})
     cues.sort(key=lambda c: c["startMs"])
-    for m in stream_marks:
-        notes.append(f"{m['sceneId']}: streaming span {(m['endMs'] - m['startMs']) / 1000:.1f}s exceeds "
-                     f"{theme['stream']['speedupAfterMs'] / 1000:.0f}s - speed-up is not applied yet, consider a shorter waitStream")
 
     # ---- audio graph
     narration = None if no_audio else find_narration(root, common.name_of(sb))
@@ -282,7 +365,7 @@ def main(argv=None):
         common.die("config.bgm.source is catalog but no track is registered - run dv.py bgm use <id>")
 
     audio_inputs, achain, amap, aenc, unplaced, placed = [], [], [], [], [], 0
-    n_in = len(clips)
+    n_in = len(clips) + (1 if badge_idx is not None else 0)
     narr_ranges = []
     if narration:
         by_cue = {(c["sceneId"], c["index"]): c for c in cues}
@@ -392,7 +475,7 @@ def main(argv=None):
         "durationSec": round(total, 2), "draft": args.draft,
         "narration": ({"voice": narration.get("voice"), "lines": placed} if narration else None),
         "bgm": (str(bgm_path) if bgm_path else None),
-        "subtitleCues": len(cues), "notes": notes,
+        "subtitleCues": len(cues), "notes": notes, "speedups": plans,
         "scenes": [{"id": c["scene"]["id"], "durationSec": round(c["dur"], 2), "startSec": round(s, 2)}
                    for c, s in zip(clips, starts)],
         "outputs": [common.rel(p, root) for p in outputs],

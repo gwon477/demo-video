@@ -33,7 +33,7 @@
   "scroll": { "maxViewportPerSec": 0.6, "settleMs": 800 },
   "hover": { "minMs": 1200 },
   "keycap": { "ms": 1000 },
-  "stream": { "speedupAfterMs": 15000 },
+  "stream": { "speedupAfterMs": 15000, "speedupTargetMs": 8000, "headMs": 2500, "tailMs": 2500, "maxFactor": 16 },
   "transition": { "default": "fade", "defaultMs": 400, "minMs": 300, "maxMs": 700,
                   "types": ["fade", "cut", "dissolve", "wipeleft", "wiperight", "slideleft", "slideright", "smoothleft", "smoothright"] },
   "scene": { "minMs": 2500, "maxMs": 9000, "actionMs": 600, "maxShowInteractions": 2 },

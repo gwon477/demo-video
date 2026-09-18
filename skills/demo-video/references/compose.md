@@ -18,6 +18,7 @@ intro  →  fade  →  scene 1  →  transitionIn  →  scene 2 … →  fade  �
 - **Intro / outro from a user video** (`source: "video"`): `compose` normalizes it to the frame size, 25fps and yuv420p. A different aspect ratio is letterboxed and reported in `manifest.notes` - tell the user (FR-041).
 - Transitions belong to the scene being entered: `transitionIn: { type, ms }`, `fade` 400ms by default, `cut` between scenes on the same page (FR-043). A cut is a one-frame fade so the whole video is one filter graph.
 - Total runtime is `Σ clips − Σ transitions`; `compose` prints the arithmetic and refuses a transition longer than either clip.
+- A `waitStream` span longer than 15s is sped up: the first and last 2.5s play at 1x, the middle is compressed to about 3s (max 16x) under a "▶▶ 배속" badge, and every later subtitle cue moves up accordingly (`manifest.speedups`). Not in draft mode.
 
 ## Audio (FR-078)
 
