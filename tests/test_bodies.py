@@ -6,7 +6,7 @@ import unittest
 from helpers import REPO, ProjectCase, dv
 
 sys.path.insert(0, str(REPO / "skills" / "demo-video" / "scripts"))
-from lib import bodygen  # noqa: E402
+from lib import bodygen, tts  # noqa: E402
 
 SB = {
     "schemaVersion": 2, "meta": {"name": "t", "size": [640, 360]},
@@ -89,3 +89,21 @@ class StylesSetTest(ProjectCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NarrateTest(ProjectCase):
+    def test_dry_run_estimates_and_refuses_when_off(self):
+        self.write_json("demo/storyboard.json", SB)
+        self.write_json("demo/config.json", {"app": {"url": "http://x"}, "narration": {"provider": "none"}})
+        code, _, err = dv("narrate", "--dry-run", cwd=self.project)
+        self.assertEqual(code, 1)
+        self.assertIn("narration is off", err)
+        code, out, err = dv("narrate", "--dry-run", "--provider", "say", cwd=self.project)
+        self.assertEqual(code, 0, err)
+        self.assertIn("1 lines", out)
+        self.assertIn("--dry-run", out)
+        self.assertEqual(self.read_json("demo/storyboard.json"), SB, "dry run must not touch the storyboard")
+
+    def test_edge_text_strips_markup(self):
+        self.assertEqual(tts.edge_text("기간을 바꾸면[[slnc 300]] [[emph +]]그래프[[emph -]]가 갱신됩니다"), "기간을 바꾸면, 그래프가 갱신됩니다")
+        self.assertEqual(tts.spoken_text("[[rate 120]]오류 3건"), "오류 3건")

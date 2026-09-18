@@ -1,74 +1,55 @@
 # Surveying the system
 
-The goal is not a list of URLs. It is enough understanding to say **what this product is for, what a user can do with it, and in what order** - because that is what the scenario, the subtitles, and the narration are all derived from. A demo built on a page list shows screens; a demo built on an understanding shows a job getting done.
-
-Budget real time here. Everything downstream inherits its mistakes.
+The goal is not a list of URLs. It is enough understanding to say **what this product is for, what a user can do with it, and in what order**, because the scenario, the subtitles and the interaction list are all derived from it. Budget real time here; everything downstream inherits its mistakes.
 
 ## 1. Read the code before opening the browser
 
-Faster and more complete than clicking around, and it tells you what exists rather than what you happened to find.
-
-- **Routes**: the router config, the pages directory, the controller/endpoint list. This is the page inventory, including pages you would never have clicked into.
-- **Navigation**: the nav/menu/sidebar component. This gives the product's own idea of its top-level structure - use that structure, do not invent your own.
-- **Roles and permissions**: guards, middleware, `role`/`permission` checks. A feature only visible to an admin needs the right account or it cannot be demoed.
-- **Feature naming**: i18n/locale files are the single best source for the product's own vocabulary. **Subtitles must use the product's words**, not yours. A demo that calls the 거래내역 screen "history" teaches the viewer the wrong name.
-- **Empty and error states**: search for the empty-list and error components. A screen with no data is a bad scene; you need to know in advance whether you must seed data.
+- **Routes**: router config, pages directory, controllers. The full page inventory, including pages you would never click into.
+- **Navigation**: the nav/menu/sidebar component gives the product's own top-level structure - use it, do not invent one.
+- **Roles and permissions**: guards, middleware, role checks. An admin-only feature needs the right account or cannot be demoed.
+- **Feature naming**: i18n/locale files are the best source of the product's vocabulary. Subtitles must use the product's words.
+- **Empty and error states**: know before recording whether data must be seeded (`config.app.resetCommand`).
+- **Interaction signals** for the pages the outline will use: drag libraries, dropzones, virtual lists, tooltips, hotkeys, streaming - the source column of `interactions.md`.
+- **How the app runs**: dev server, Electron with a web/preview mode, fixtures. The skill never starts the app; if it needs a flag or a fixture mode to be demoable, write it down under `obstacles`.
 
 ## 2. Then walk it in the browser
 
 ```bash
 playwright-cli open --headed
-playwright-cli goto <dev-url>
+playwright-cli goto <url>
 playwright-cli snapshot
 ```
 
-Per page, record:
+Per page record the route, what a user can do there in one sentence (the seed of its subtitle), the locators of everything the demo will touch, its density (visible text length, interactive element count), how a user arrives and leaves, and the state it needs. `dv.py brand probe` reads the identity (logo, colors, font) while you are at it.
 
-- **Route and title**, matched to what you found in the code.
-- **What a user can do here**, in one sentence, in the product's own vocabulary. This sentence is the seed of the page's subtitle.
-- **Locators** for every element the demo will touch, straight from the snapshot. Never invent a locator later.
-- **Density**: run `density()` - `{ textChars, interactive, dwellMs }` - so dwell time comes from what is on screen rather than a guess.
-- **Entry and exit**: how a user arrives here and where they can go next. This is what makes scenes connect instead of jump.
-- **State it needs**: data that must exist, a role, a prior action. Note anything you had to set up.
+Locators are **selector strings** `page.locator()` accepts: CSS (`[data-testid=fail-list]`, `.sheet-rw >> nth=0`) or Playwright engines (`role=button[name="열기"]`, `role=tab[name=/생성 이력/]`, `text=...`). A quoted `role` name is an exact match; use a regex for partial names. `validate` refuses any storyboard target that is not in the survey.
 
-Log in once and persist it rather than scripting the login every run:
+Log in once and persist it: `playwright-cli state-save demo/.auth.json`, referenced as `meta.authState`. Credentials go in `demo/.accounts.json` (gitignored) and are used as `ACCOUNTS.<key>.<field>`.
 
-```bash
-playwright-cli state-save demo/.auth.json
-playwright-cli state-load demo/.auth.json
-```
-
-Add `demo/.auth.json` to `.gitignore` - it holds live session credentials.
-
-## 3. Write demo/survey.json
+## 3. Write demo/survey.json (schemaVersion 2)
 
 ```json
 {
-  "product": "RA-DAR",
-  "baseUrl": "https://dev.example.com",
-  "surveyedAt": "2026-09-03",
-  "roles": ["admin", "analyst"],
+  "schemaVersion": 2, "product": "Camino", "surveyedAt": "2026-09-17",
+  "vocabulary": ["실패 테스트", "야간 실행", "재실행"],
+  "roles": ["QA 담당자"],
+  "coreFeatures": ["1. 실패 테스트 확인", "2. 우선순위 드래그 정렬", "3. 결과 파일 드롭 업로드"],
+  "obstacles": ["로그인 계정 없음: 데모 계정 필요", "결과 업로드는 파일 2개 이상 시드 필요"],
   "pages": [
     {
-      "id": "dashboard",
-      "route": "/dashboard",
-      "title": "대시보드",
-      "canDo": "관심 종목의 지표를 한눈에 확인하고 기간을 바꿔 추이를 봅니다",
-      "features": ["지표 카드", "기간 필터", "추이 그래프"],
-      "locators": {
-        "periodMonthly": "getByRole('button', { name: '월간' })",
-        "firstCard": "getByTestId('metric-card').first()"
-      },
-      "density": { "textChars": 940, "interactive": 12, "dwellMs": 6800 },
-      "entryFrom": ["login"],
-      "exitTo": ["detail"],
-      "needs": "관심 종목 1건 이상",
-      "notes": "데이터 없으면 빈 상태 카드만 보임 - 시연 전 시드 필요"
+      "id": "dashboard", "route": "/index.html", "title": "대시보드",
+      "canDo": "야간 실행 결과와 실패 원인을 확인한다",
+      "locators": { "failList": "[data-testid=fail-list]", "failRow1": "[data-testid=fail-row-1]" },
+      "density": { "textChars": 1650, "interactive": 6 },
+      "interactionsSeen": ["scroll", "hover", "key"],
+      "needs": "실패 3건 이상"
     }
   ]
 }
 ```
 
-## 4. Report before moving on
+`density.textChars` decides whether a page may be zoomed (FR-022) and how long it stays on first appearance. `page` in a storyboard scene refers to `pages[].id`.
 
-State plainly what you found and, more importantly, what is in the way: a page that 404s, a feature that needs data you do not have, a role the credentials cannot reach. Raising it now costs a sentence. Raising it after rendering costs the whole video.
+## 4. Report before moving on: G1
+
+State what you found and what is in the way (a 404, a feature without data, a role the account cannot reach, an app that needs a fixture mode), then the 3-5 core features in priority order. Stop. `dv.py approve survey` only after the user confirms.

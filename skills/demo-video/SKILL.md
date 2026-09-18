@@ -58,13 +58,13 @@ Not a page list - an understanding of what the product is for and what a user ca
 
 Full method, including the `demo/survey.json` shape and the auth-state handling: `references/survey.md`.
 
-Report what you found and what is in the way - a page that 404s, a feature needing data you do not have, a role your credentials cannot reach - before going further. Then present the 3-5 core features in priority order and stop: G1.
+**G1 - show:** what is in the way (404s, missing data, unreachable roles, an app that needs a fixture mode) and the 3-5 core features in priority order. **Ask:** are these the features to show, in this order? Stop until answered.
 
 ## Phase 2 - Write the user scenario, then the outline
 
 Decide whose job the viewer is watching get done. A page-ordered demo names screens; a scenario-ordered demo shows work being completed and the screens explain themselves. Write `demo/scenario.md`: the user, the goal, the flow with a reason for each step's position, and what the video deliberately does not cover. Method and the scenario-to-subtitle rewrite: `references/scenario.md`.
 
-Then present the scene outline with a runtime estimate and **stop for approval** (G2):
+**G2 - show:** the scene outline with a runtime per scene and the total against the target, the opening hook line, and the BGM top 3 when BGM is on. **Ask:** approve, or which scenes to add, drop or reorder? Stop until answered:
 
 ```
 1. 인트로            2.5s   타이틀 카드
@@ -99,7 +99,7 @@ Intro and outro come from the user when they have videos (`init --intro/--outro`
 
 Styling is a choice the user makes, not the model: before or during G3 run `dv.py styles` (subtitle and highlight presets drawn on a real screenshot of this app, `demo/styles.png`), show it, and apply the pick with `dv.py styles --apply subtitle=<name>,highlight=<name>` - it writes `demo/theme.json`, which every later render uses. Values outside the presets go in with `dv.py styles --set subtitle.color=#fff,highlight.borderPx=3` (any key of `assets/theme.json`), then `dv.py styles` again to preview. Skip it only if the user says the defaults are fine.
 
-Fix the storyboard until `validate` passes - never argue with a rule. Show `sheet.html`, the interaction decisions and any `blocked` items to the user and stop: G3. Edits are cheap here and expensive after rendering.
+Fix the storyboard until `validate` passes - never argue with a rule. **G3 - show:** `sheet.html`, the interaction show/skip decisions, any `blocked` items, the chosen styles and cards. **Ask:** approve, or which subtitles, effects or decisions to change? Stop until answered. Edits are cheap here and expensive after rendering.
 
 ## Phase 3.5 - Narration (only if the demo has voice-over)
 
@@ -166,7 +166,7 @@ For a first look use `render --draft` then `compose --draft` (960px, cuts, no au
 python3 <skill>/scripts/dv.py review             # per-scene strips, effect/cue/timing findings, transition frames
 ```
 
-Review the recorded video, not the storyboard, as three people - PD (연출), user (시청자), critic (평론가) - with the checklist in `references/review.md`, reading every strip. Write `demo/review.md` with a verdict, findings (persona, scene, severity, evidence frame, fix) and the fix plan routed through the feedback table. Fix every `fail` (storyboard → validate → approve → render changed scenes → compose → verify → review), then report the path, runtime, whether narration and BGM are included, and the review verdict with the remaining `warn`/`note` items. Stop: G4.
+Review the recorded video, not the storyboard, as three people - PD (연출), user (시청자), critic (평론가) - with the checklist in `references/review.md`, reading every strip. Write `demo/review.md` with a verdict, findings (persona, scene, severity, evidence frame, fix) and the fix plan routed through the feedback table. Fix every `fail` (storyboard → validate → approve → render changed scenes → compose → verify → review). **G4 - show:** the mp4 path, runtime, whether narration and BGM are included (and the CREDITS line if CC BY), the review verdict with the remaining `warn`/`note` items. **Ask:** approve, or what to change (routing: `references/feedback.md`)? Stop until answered.
 
 Layout:
 
@@ -186,4 +186,4 @@ demo/
 
 ## Re-recording
 
-The storyboard is the source of truth. To change the demo, edit `demo/storyboard.json`, run `validate --fix`, get it approved again, re-run `dv.py narrate` if any spoken line changed, then `render` - the hash cache re-records only the scenes that changed - and `compose`. Never hand-edit a rendered clip or an audio file. Feedback routing by type: `references/feedback.md` (M4).
+The storyboard is the source of truth. To change the demo, edit `demo/storyboard.json`, run `validate --fix`, get it approved again, re-run `dv.py narrate` if any spoken line changed, then `render` - the hash cache re-records only the scenes that changed - and `compose`. Never hand-edit a rendered clip or an audio file. Feedback routing by type: `references/feedback.md`.
